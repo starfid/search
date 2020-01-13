@@ -1,4 +1,4 @@
-![Starfid Search](https://raw.githubusercontent.com/starfid/search/master/preview.png)
+![Starfid Search](https://raw.githubusercontent.com/starfid/search/master/preview-small.png)
 
 ## Starfid Search specifications
 - PHP 5.3 - 7.4.1, tested.
