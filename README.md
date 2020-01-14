@@ -2,6 +2,7 @@
 
 ## Starfid Search specifications
 - PHP 5.3 - 7.4.1, tested.
+- Responsive UI.
 - PHP Data Objects (PDO).
 - Relevance ranked search.
 - Multiple tables search.
