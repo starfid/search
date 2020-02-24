@@ -76,7 +76,7 @@
 			$s .= "\n\t\t</div>";
 			$s .= "\n\t\t<div id=\"browse-by\" class=\"mid970\">";
 			$s .= "\n\t\t\tShow latest from";
-			$s .= "\n\t\t\t<select id=\"samples\" name=\"samples\" onchange=\"show();\">";
+			$s .= "\n\t\t\t<select id=\"samples\" name=\"samples\" class=\"main-bg\" onchange=\"show();\">";
 			$s .= "\n\t\t\t\t<option selected>category</option>";
 			foreach($this->allCat as $category => $prefix){
 				$s .= "\n\t\t\t\t<option value=\"".$category."\">".ucwords($category)."</option>";
