@@ -12,6 +12,8 @@
 			$this->result = $x->data;
 			$this->error = $x->error;
 			$this->emptyResult = is_null($x->data)?True:False;
+			$this->emptyKeyword = (!isset($_GET['search']) || empty($_GET['search']))?True:False;
+			
 
 			$this->placeholder = isset($this->keywords['original'])?$this->keywords['original']['placeholder']:"";
 
@@ -35,73 +37,73 @@
 			$s .= "\n\t<head>";
 
 			$header = !empty($this->placeholder)?ucwords($this->placeholder)." - ":"";
-			$header = $header.$this->pref['siteName'];
+			$header = $header.$this->pref['site']['name'];
 
 			$s .= "\n\t\t<title>".$header."</title>";
 			$s .= "\n\t\t<meta content=\"yes\" name=\"apple-mobile-web-app-capable\" />";
 			$s .= "\n\t\t<meta content=\"notranslate\" name=\"google\" />";
-			$s .= "\n\t\t<meta content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" name=\"viewport\" />";
+			$s .= "\n\t\t<meta name=\"theme-color\" content=\"#5D5D5D\" />";
+			$s .= "\n\t\t<meta content=\"".$this->pref['site']['desc']."\" name=\"description\" />";
+			$s .= "\n\t\t<meta content=\"width=device-width,initial-scale=1,shrink-to-fit=no\" name=\"viewport\" />";
 			$s .= "\n\t\t<meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />";
 			$s .= "\n\t\t<meta content=\"telephone=no\" name=\"format-detection\" />";
 			$s .= "\n\t\t<link href=\"cache/style.css\" rel=\"stylesheet\" type=\"text/css\" />";
 			$s .= "\n\t\t<script src=\"cache/script.js\" type=\"text/javascript\"></script>";
 			$s .= "\n\t</head>";
 			$s .= "\n\t<body class=\"main-bg\">";
-			$s .= "\n\t\t<div class=\"grey-bg\">";
+
+			if($this->emptyKeyword){
+				$s .= "\n\t\t\t<div id=\"campaign\">";
+				
+				$s .= "\n\t\t\t\t<div class=\"mid1000\">";
+				
+				$s .= "\n\t\t\t\t\t<h1>".$this->pref['campaign']['title']."</h1>";
+				$s .= "\n\t\t\t\t\t<h2>".$this->pref['campaign']['desc']."</h2>";
+
+				$s .= "\n\t\t\t\t</div>";
+
+				$s .= "\n\t\t\t\t<div id=\"edge\" style=\"\">&nbsp;</div>";
+				$s .= "\n\t\t\t</div>";
+			}
+			else {
+				
+			}
+
+
+			$s .= "\n\t\t<div>";
 			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float mid1000\">";
 			
 			$s .= "\n\t\t\t\t<div id=\"searchBox\">";
 			$s .= "\n\t\t\t\t\t<form method=\"get\">";
-			$s .= "\n\t\t\t\t\t\t<input name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".$this->placeholder."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
-			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" onclick=\"submit();\" />";
+			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".$this->placeholder."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
+			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify1.png\" onclick=\"submit();\" />";
 			$s .= "\n\t\t\t\t\t</form>";
 			$s .= "\n\t\t\t\t</div>";
 
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
-			$s .= "\n\t\t<div class=\"grey-bg\" id=\"catswrap\">";
-			$s .= "\n\t\t\t<ul id=\"cats\" class=\"mid970\">";
 
-			$catSelected = " id=\"cat-selected\"";
 			
-			$allSelected = isset($this->keywords) && array_key_exists('category',$this->keywords)?'':$catSelected;
-			$s .= "\n\t\t\t\t<li class=\"cat\" onclick=\"add('')\"".$allSelected.">All</li>";
+			if(!$this->emptyKeyword){
+				$s .= "\n\t\t<div id=\"catswrap\">";
+				$s .= "\n\t\t\t<ul id=\"cats\" class=\"mid970\">";
 
-			foreach($this->allCat as $category => $prefix){
-				$listSelected = isset($this->keywords) && array_key_exists('category',$this->keywords) && $this->keywords['category'] == $category ?$catSelected:'';
-				$s .= "\n\t\t\t\t<li".$listSelected." class=\"cat\" onclick=\"add('".$category."')\">".ucwords($category)."</li>";
-			}
+				$catSelected = " id=\"cat-selected\"";
+				
+				$allSelected = isset($this->keywords) && array_key_exists('category',$this->keywords)?'':$catSelected;
+				$s .= "\n\t\t\t\t<li class=\"cat\" onclick=\"add('')\"".$allSelected.">All</li>";
 
-			$s .= "\n\t\t\t</ul>";
-			$s .= "\n\t\t</div>";
-			$s .= "\n\t\t<div id=\"browse-by\" class=\"mid970\">";
-			$s .= "\n\t\t\tShow latest from";
-			$s .= "\n\t\t\t<select id=\"samples\" name=\"samples\" class=\"main-bg\" onchange=\"show();\">";
-			$s .= "\n\t\t\t\t<option selected>category</option>";
-			foreach($this->allCat as $category => $prefix){
-				$s .= "\n\t\t\t\t<option value=\"".$category."\">".ucwords($category)."</option>";
+				foreach($this->allCat as $category => $prefix){
+					$listSelected = isset($this->keywords) && array_key_exists('category',$this->keywords) && $this->keywords['category'] == $category ?$catSelected:'';
+					$s .= "\n\t\t\t\t<li".$listSelected." class=\"cat\" onclick=\"add('".$category."')\">".ucwords($category)."</li>";
+				}
+
+				$s .= "\n\t\t\t</ul>";
+				$s .= "\n\t\t</div>";
 			}
-			$s .= "\n\t\t\t</select>";
-			$s .= "\n\t\t</div>";
+		
+			
 			$s .= "\n\t\t<div id=\"content\" class=\"float mid1000\">";
-
-			if(
-				isset($this->keywords) && 
-				array_key_exists('new',$this->keywords) && 
-				count($this->keywords['new']['similarity']) > 0
-			){
-				$s .= "\n\t\t\t<div class=\"right\" id=\"hero\">";
-				$s .= "\n\t\t\t\tInclude searching for:<br />&bullet; ".implode("<br />&bullet; ",$this->keywords['new']['similarity']);
-				$s .= "\n\t\t\t</div>";
-			}
-			elseif(!isset($_GET['search']) || empty($_GET['search'])){
-				$s .= "\n\t\t\t<div class=\"right\" id=\"hero\">";
-				$s .= "\n\t\t\t\t<img width=\"120\" class=\"right\" src=\"cache/profile.png\" />";
-				$s .= "\n\t\t\t\t<h1>".$this->pref['siteName']."</h1>";
-				$s .= "\n\t\t\t\t<h5 class=\"loc\">".$this->pref['shortDesc']."</h5>";
-				$s .= "\n\t\t\t\t<p>".$this->pref['longDesc']."</p>";
-				$s .= "\n\t\t\t</div>";
-			}
 
 			$s .= "\n\t\t\t<div class=\"left\" id=\"results\">";
 
