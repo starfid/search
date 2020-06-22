@@ -21,7 +21,7 @@ ul li {list-style:none}
 	position:relative;
 	background-repeat:no-repeat;
 	background-size:100% auto;
-	background-position-y:20%;
+	background-position-y:40%;
 	background-color: #5D5D5D;
 	background-blend-mode: multiply;
 }
