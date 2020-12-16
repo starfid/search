@@ -76,7 +76,7 @@
 			$s .= "\n\t\t\t\t<div id=\"searchBox\">";
 			$s .= "\n\t\t\t\t\t<form method=\"get\">";
 			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".$this->placeholder."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
-			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify1.png\" onclick=\"submit();\" />";
+			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" onclick=\"submit();\" />";
 			$s .= "\n\t\t\t\t\t</form>";
 			$s .= "\n\t\t\t\t</div>";
 
@@ -97,6 +97,9 @@
 					$listSelected = isset($this->keywords) && array_key_exists('category',$this->keywords) && $this->keywords['category'] == $category ?$catSelected:'';
 					$s .= "\n\t\t\t\t<li".$listSelected." class=\"cat\" onclick=\"add('".$category."')\">".ucwords($category)."</li>";
 				}
+
+				//$s .= "\n\t\t\t\t<li class=\"cat\" onclick=\"\">Year</li>";
+				//$s .= "\n\t\t\t\t<li class=\"cat\" onclick=\"\">Language</li>";
 
 				$s .= "\n\t\t\t</ul>";
 				$s .= "\n\t\t</div>";
