@@ -35,10 +35,12 @@
 			}
 
 			if(!is_null($this->data)){
-				
 				if($this->isSearch){
-					//sorting rank value given, require minimum PHP 5.5
-					$rank = array_column($this->data, 'rank');
+					//rank multiple sql categories results
+					$rank = array();
+					foreach ($this->data as $key => $row){
+						$rank[$key] = $row['rank'];
+					}
 					array_multisort($rank, SORT_DESC, $this->data);
 				}
 				$this->catFound = array_count_values($this->catFound);
