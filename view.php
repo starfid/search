@@ -4,6 +4,9 @@
 		private $result, $keywords, $catFound, $allCat, $name, $emptyResult, $debug, $placeholder, $error;
 
 		function __construct($x, $preference){
+
+//print_r($x);
+
 			$this->keywords = $x->keywords;
 			$this->allCat = $preference['prefix'];
 			$this->pref = $preference;
@@ -83,7 +86,6 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 
-			
 			if(!$this->emptyKeyword){
 				$s .= "\n\t\t<div id=\"catswrap\">";
 				$s .= "\n\t\t\t<ul id=\"cats\" class=\"mid970\">";
@@ -110,7 +112,10 @@
 
 			$s .= "\n\t\t\t<div class=\"left\" id=\"results\">";
 
-			if($this->emptyResult){
+			if(count($this->error)>0){
+				$s .= "\n\t\t\t\t<dl>\n\t\t\t\t\t<dt>Check your SQL in table settings</dt><dd>".implode('<br />',$this->error)."</dd></dl>";
+			}
+			elseif($this->emptyResult){
 				$s .= "\n\t\t\t\t<dl>\n\t\t\t\t\t<dd>";
 				if(!empty($this->placeholder)){
 					$s .= "No results found for <strong>".$this->placeholder."</strong>";
@@ -119,7 +124,7 @@
 					$s .= "No data was found";
 				}
 				else{
-					$s .= $this->error;
+					$s .= implode($this->error,'<br />');
 				}
 				$s .= "\n\t\t\t\t\t</dd>";
 				$s .= "\n\t\t\t\t</dl>";
