@@ -4,9 +4,6 @@
 		private $result, $keywords, $catFound, $allCat, $name, $emptyResult, $debug, $placeholder, $error;
 
 		function __construct($x, $preference){
-
-//print_r($x);
-
 			$this->keywords = $x->keywords;
 			$this->allCat = $preference['prefix'];
 			$this->pref = $preference;
@@ -17,7 +14,6 @@
 			$this->emptyResult = is_null($x->data)?True:False;
 			$this->emptyKeyword = (!isset($_GET['search']) || empty($_GET['search']))?True:False;
 			
-
 			$this->placeholder = isset($this->keywords['original'])?$this->keywords['original']['placeholder']:"";
 
 			$this->html();
@@ -68,10 +64,6 @@
 				$s .= "\n\t\t\t\t<div id=\"edge\" style=\"\">&nbsp;</div>";
 				$s .= "\n\t\t\t</div>";
 			}
-			else {
-				
-			}
-
 
 			$s .= "\n\t\t<div>";
 			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float mid1000\">";
