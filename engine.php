@@ -1,6 +1,6 @@
 <?php
 	class Search extends Database {
-		public $benchmark, $data, $result, $catfound, $keywords, $sql, $nodata, $error;
+		public $benchmark, $data, $result, $catfound, $keywords, $sql, $nodata, $error = Array();
 		private $settings, $isSearch;
 
 		function __construct($settings){
@@ -19,13 +19,13 @@
 
 			$this->build_sql();
 			$this->preparing_result();
-		
+			$this->error = array_filter($this->error);
 		}
 
 		function preparing_result(){
 			foreach($this->sql as $sql){
 				$q = $this->query($sql);
-				$this->error = isset($q['error'])?$q['error']:NULL;
+				$this->error[] = isset($q['error'])?$q['error']:NULL;
 				for($i=0;$i<$q['count'];$i++){
 					$this->data[] = $q['match'][$i];
 					if(!empty($q['match'][$i]['category'])){
