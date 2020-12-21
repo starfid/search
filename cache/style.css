@@ -52,7 +52,7 @@ ul li {list-style:none}
 	padding:0;margin:0;
 	margin:0 auto;
 }
-.cat {
+#cats li {
 	cursor:pointer;
 	padding:0px 5px 12px 5px;
 	margin:0 0px 0 0px;
@@ -62,7 +62,7 @@ ul li {list-style:none}
 	display:inline-block;
 	white-space: nowrap;
 }
-#cat-selected {color:#111111!important;border-bottom:solid #111111 1px}
+.selCat {color:#111111!important;border-bottom:solid #111111 1px}
 .main-bg {background-color:#ffffff}
 
 #results {width:590px;}
@@ -94,11 +94,11 @@ dd {font-size:14px;}
 	.main-bg,#edge {background-color:#1A1A1A;}
 	#searchBox,#search {background-color:#444444;}
 	#catswrap {border-bottom:solid 1px #404040}
-	#cat-selected {border-bottom:solid 1px #505050}
+	.selCat {border-bottom:solid 1px #505050}
 	#magnify:before, #magnify:after {content:url('magnify-dark.png')}
 	.loc {color:#61B12E}
 	#search {color:#FCFCFC}
-	#cat-selected, dt, h1, h2 {color:#AAAAAA!important}
+	.selCat, dt, h1, h2 {color:#BBBBBB!important}
 	dd {color:#727272}
 	#campaign {background-color: #666666;}
 }
