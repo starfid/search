@@ -1,11 +1,15 @@
 <?php
 	class Serp {
 		public $data;
-		private $result, $keywords, $catFound, $allCat, $name, $emptyResult, $debug, $placeholder, $error;
+		private $result, $keywords, $selectedCat, $allCats, $name, $emptyResult, $debug, $placeholder, $error;
 
 		function __construct($x, $preference){
 			$this->keywords = $x->keywords;
-			$this->allCat = $preference['prefix'];
+			
+			$this->allCats = array_keys($preference['categories']);
+			array_unshift($this->allCats,"all");
+
+			$this->selectedCat = $x->selectedCat;
 			$this->pref = $preference;
 			$this->debug = $preference['debug'];
 
@@ -69,8 +73,9 @@
 			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float mid1000\">";
 			
 			$s .= "\n\t\t\t\t<div id=\"searchBox\">";
-			$s .= "\n\t\t\t\t\t<form method=\"get\">";
+			$s .= "\n\t\t\t\t\t<form method=\"get\" action=\"?\">";
 			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".$this->placeholder."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
+			$s .= "\n\t\t\t\t\t\t<input type=\"hidden\" id=\"cat\" name=\"cat\" value=\"".$this->selectedCat."\" />";
 			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" onclick=\"submit();\" />";
 			$s .= "\n\t\t\t\t\t</form>";
 			$s .= "\n\t\t\t\t</div>";
@@ -82,18 +87,11 @@
 				$s .= "\n\t\t<div id=\"catswrap\">";
 				$s .= "\n\t\t\t<ul id=\"cats\" class=\"mid970\">";
 
-				$catSelected = " id=\"cat-selected\"";
 				
-				$allSelected = isset($this->keywords) && array_key_exists('category',$this->keywords)?'':$catSelected;
-				$s .= "\n\t\t\t\t<li class=\"cat\" onclick=\"add('')\"".$allSelected.">All</li>";
-
-				foreach($this->allCat as $category => $prefix){
-					$listSelected = isset($this->keywords) && array_key_exists('category',$this->keywords) && $this->keywords['category'] == $category ?$catSelected:'';
-					$s .= "\n\t\t\t\t<li".$listSelected." class=\"cat\" onclick=\"add('".$category."')\">".ucwords($category)."</li>";
+				foreach($this->allCats as $category){
+					$borderBottom = $category==$this->selectedCat?" class=\"selCat\"":"";
+					$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".ucwords($category)."</li>";
 				}
-
-				//$s .= "\n\t\t\t\t<li class=\"cat\" onclick=\"\">Year</li>";
-				//$s .= "\n\t\t\t\t<li class=\"cat\" onclick=\"\">Language</li>";
 
 				$s .= "\n\t\t\t</ul>";
 				$s .= "\n\t\t</div>";
@@ -110,7 +108,9 @@
 			elseif($this->emptyResult){
 				$s .= "\n\t\t\t\t<dl>\n\t\t\t\t\t<dd>";
 				if(!empty($this->placeholder)){
-					$s .= "No results found for <strong>".$this->placeholder."</strong>";
+					
+					$s .= "No results found for <strong>".$this->placeholder."</strong> ";
+					$s .= $this->selectedCat != "all"?"in this ".$this->selectedCat." category":"";
 				}
 				elseif(is_null($this->error)){
 					$s .= "No data was found";
@@ -122,10 +122,11 @@
 				$s .= "\n\t\t\t\t</dl>";
 			}
 			else{
-
 				for($i=0;$i<count($this->result);$i++){
 					$data = $this->result[$i];
+					
 					$title = in_array('rank',$data)&&$this->debug?" title=\"".$data['rank']."\"":"";
+
 					$s .= "\n\t\t\t\t<dl".$title.">";
 					$s .= "\n\t\t\t\t\t<dt>".$this->highlight(stripslashes(stripslashes($data['header'])))."</dt>";
 					$s .= "\n\t\t\t\t\t<dd>";
@@ -138,6 +139,8 @@
 
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
+
+			$s .= "\n\t<div>x</div>";
 
 			$this->data = $s;
 
