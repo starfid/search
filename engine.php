@@ -1,6 +1,6 @@
 <?php
 	class Search extends Database {
-		public $benchmark, $data, $result, $catfound, $keywords, $sql, $nodata, $error = Array();
+		public $benchmark, $data, $selectedCat, $result, $catfound, $keywords, $sql, $nodata, $error = Array();
 		private $settings, $isSearch;
 
 		function __construct($settings){
@@ -17,6 +17,7 @@
 				$this->build_keywords();
 			}
 
+			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
 			$this->build_sql();
 			$this->preparing_result();
 			$this->error = array_filter($this->error);
@@ -38,9 +39,12 @@
 				if($this->isSearch){
 					//rank multiple sql categories results
 					$rank = array();
-					foreach ($this->data as $key => $row){
-						$rank[$key] = $row['rank'];
-					}
+
+					//PHP 5.3
+					//foreach ($this->data as $key => $row){ $rank[$key] = $row['rank']; }
+					
+					//PHP 5.4+
+					$rank = array_column($this->data, 'rank');
 					array_multisort($rank, SORT_DESC, $this->data);
 				}
 				$this->catFound = array_count_values($this->catFound);
@@ -65,11 +69,6 @@
 				$dictionary['abbreviation']
 			);
 			unset($dictionary['abbreviation']);
-
-			//rebuild category
-			foreach($this->settings['preference']['prefix'] as $key => $value){
-				foreach($value as $sub) $dictionary['category'][$sub] = $key;
-			}
 			
 			//store dictionary session to session
 			$_SESSION['dictionary'] = $dictionary;
@@ -78,20 +77,7 @@
 
 		function build_keywords(){
 
-			$fullSentence = strtolower($this->keywords['original']['placeholder']);
-			$firstWord = strtok($fullSentence,' ');
-
-
-			if(array_key_exists($firstWord,$_SESSION['dictionary']['category'])){
-				$this->keywords['category'] = $_SESSION['dictionary']['category'][$firstWord];
-				if(str_word_count($fullSentence)>1){
-					$fullSentence = preg_replace('/^(\w+\s)/','', $fullSentence);
-				}
-				else {
-					$this->isSearch = false;
-					return;
-				}
-			}
+			$fullSentence = preg_replace('/^(\w+\s)/','', strtolower($this->keywords['original']['placeholder']));
 
 			$this->keywords['original']['full'] = $fullSentence;
 			$this->keywords['original']['words'] = explode(' ',$fullSentence);
@@ -145,7 +131,7 @@
 				$col[] = "\n\t".$param['additional']." as additional";
 				$cols = implode(',',$col);
 
-				$having = isset($this->keywords['category'])?"having category = '".$this->keywords['category']."'":"";
+				$having = $this->selectedCat != "all"?"having category = '".$this->selectedCat."'":"";
 				$orderBy = "";
 				$rank = "";
 				$where = "";
@@ -198,17 +184,52 @@
 				$this->sql[] = $select." ".$rank." ".$cols."\nfrom ".$table."\n".$where."\n".$having."\n".$orderBy."\nlimit ".$limit;
 			}
 		}
-
-
-
-
-
-
-
-
 	}
 
 
+	class Database {
+		var $link;
+		function __construct($db) {
+			try {
+				$this->link = new PDO(
+					$db['rdbms'].":host=".$db['host'].";dbname=".$db['dbname'].";port=".$db['port'],
+					$db['username'],
+					$db['password']
+				);
+				$this->link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			}
+			catch(PDOException $e) {
+				echo $e->getMessage(); exit;
+			}
+		}
+		public function query($sql, $row = false) {
+			$res = Array();
+			$res['count'] = 0;
+			try {
+				$exec = $this->link->query($sql);
+				$res['sql'] = $sql;
+				$res['count'] = $exec->rowCount();
+				$views = array('select','show','describe');
+				$prefix = strtok(trim(preg_replace('/\PL/u',' ',strtolower($sql))),' ');
+				
+				if(in_array($prefix,$views)) {
+					$res['cols'] = Array();
+					if($exec->columnCount() > 0) {
+						foreach(range(0, $exec->columnCount() - 1) as $columns) {
+							$meta = $exec->getColumnMeta($columns);
+							$res['cols'][] = $meta['name'];
+						}
+					}
+					$res['match'] = $exec->fetchAll(PDO::FETCH_ASSOC);
+					if(is_numeric($row)) return $res['match'][$row][$res['cols'][0]];
+				}
+			}
+			catch(PDOException $e) {
+				$res['error'] = $e->getMessage();
+			}
+			return $res;
+		}
+	}
 
 
 
