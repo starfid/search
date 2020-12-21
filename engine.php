@@ -76,9 +76,7 @@
 
 
 		function build_keywords(){
-
-			$fullSentence = preg_replace('/^(\w+\s)/','', strtolower($this->keywords['original']['placeholder']));
-
+			$fullSentence = strtolower($this->keywords['original']['placeholder']);
 			$this->keywords['original']['full'] = $fullSentence;
 			$this->keywords['original']['words'] = explode(' ',$fullSentence);
 			$this->keywords['new']['without_noise'] = array_diff($this->keywords['original']['words'],$_SESSION['dictionary']['noise']);
