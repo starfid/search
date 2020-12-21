@@ -41,10 +41,11 @@
 					$rank = array();
 
 					//PHP 5.3
-					//foreach ($this->data as $key => $row){ $rank[$key] = $row['rank']; }
+					foreach ($this->data as $key => $row){ $rank[$key] = $row['rank']; }
 					
 					//PHP 5.4+
-					$rank = array_column($this->data, 'rank');
+					//$rank = array_column($this->data, 'rank');
+					
 					array_multisort($rank, SORT_DESC, $this->data);
 				}
 				$this->catFound = array_count_values($this->catFound);
