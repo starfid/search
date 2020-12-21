@@ -7,5 +7,4 @@
 - Relevance ranked search.
 - Multiple tables search.
 - Supervised ML dictionaries.
-- Natural language search using prefix.
 - Dark mode support.
