@@ -8,3 +8,10 @@
 - Multiple tables search.
 - Supervised ML dictionaries.
 - Dark mode support.
+- Multiple view format (HTML & RSS)
+
+
+## Starfid API
+```
+?search=word&cat=music&format=rss
+```
