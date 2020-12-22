@@ -145,6 +145,7 @@
 				if($this->isSearch){
 					$where = array();
 					$rank = array();
+					$gap = "$$$";
 
 					foreach($param['index'] as $column){
 						$column = "trim(lcase(".$column."))";
@@ -154,8 +155,8 @@
 						$rank[] = "\n\tcast(if(".$column."='".$this->keywords['original']['full']."','400',0) as signed) ";
 
 						if(!in_array($this->keywords['original']['full'],$_SESSION['dictionary']['low'])){
-							$rank[] = "\n\tcast(if(instr(concat('xzxz',".$column."),'xzxz".$this->keywords['original']['full']."')>0,'300',0) as signed) ";
-							$rank[] = "\n\tcast(if(instr(concat(".$column.",'xzxz'),'".$this->keywords['original']['full']."xzxz')>0,'250',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap."".$this->keywords['original']['full']."')>0,'300',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$this->keywords['original']['full']."".$gap."')>0,'250',0) as signed) ";
 						}
 
 						foreach($this->keywords['new']['final'] as $word){
@@ -164,8 +165,13 @@
 							if(!in_array($word,$_SESSION['dictionary']['low'])){
 								$rank[] = "\n\tcast(if( ".$column." = '".$word."' and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 1 ,'200',0) as signed) ";
 								$rank[] = "\n\tcast(if( ".$column." = '".$word."' and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) > 1 ,'200',0) as signed) ";
-								$rank[] = "\n\tcast(if( instr(concat('$',".$column."),'$".$word."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2 ,'21',0) as signed) ";
-								$rank[] = "\n\tcast(if( instr(concat(".$column.",'$'),'".$word."$')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2 ,'20',0) as signed) ";
+
+								$rank[] = "\n\tcast(if( instr(concat('".$gap."',".$column."),'".$gap."".$word."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2 ,'21',0) as signed) ";
+								$rank[] = "\n\tcast(if( instr(concat(".$column.",'".$gap."'),'".$word."".$gap."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2 ,'20',0) as signed) ";
+
+								$rank[] = "\n\tcast(if( instr(concat('".$gap."',".$column."),'".$gap."".$word."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 3 ,'16',0) as signed) ";
+								$rank[] = "\n\tcast(if( instr(concat(".$column.",'".$gap."'),'".$word."".$gap."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 3 ,'15',0) as signed) ";
+
 
 								$rank[] = "\n\tcast(if(instr(concat(' ',".$column.",' '),' ".$word." ')>0,'6',0) as signed)";
 								$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),' ".$word."')>0,'7',0) as signed)";
