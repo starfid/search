@@ -102,18 +102,9 @@
 			
 
 			elseif($this->emptyResult){
-				$s .= "\n\t\t\t\t<dl>\n\t\t\t\t\t<dd>";
-				if(!empty($this->placeholder)){
-					
-					$s .= "No results found for <strong>".$this->placeholder."</strong> ";
-					$s .= $this->selectedCat != "all"?"in this ".$this->selectedCat." category":"";
-				}
-				elseif(is_null($this->error)){
-					$s .= "No data was found";
-				}
-				else{
-					$s .= implode($this->error,'<br />');
-				}
+				$s .= "\n\t\t\t\t<dl class=\"warning\">\n\t\t\t\t\t<dd>";
+				$s .= "No results found for <strong>".$this->placeholder."</strong> ";
+				$s .= $this->selectedCat != "all"?"in this ".$this->selectedCat." category":"";
 				$s .= "\n\t\t\t\t\t</dd>";
 				$s .= "\n\t\t\t\t</dl>";
 			}
