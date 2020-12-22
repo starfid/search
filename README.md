@@ -1,6 +1,6 @@
 ![Starfid Search](https://raw.githubusercontent.com/starfid/search/master/preview.png)
 
-## Starfid Search specifications
+## Specifications
 - PHP 5.3 - 8, tested.
 - Responsive UI.
 - PHP Data Objects (PDO).
@@ -11,7 +11,7 @@
 - Multiple view format (HTML & RSS)
 
 
-## Starfid API
+## API Sample
 ```
 ?search=word&cat=music&format=rss
 ```
