@@ -1,10 +1,10 @@
 window.onload = function(){
 	caret();
-	document.getElementById('search').addEventListener('focus',function(e) {
-		window.scrollTo(0,0);
+	document.getElementById('search').addEventListener('focus',function() {		
 		caret();
 	});
 	document.getElementById('search').addEventListener('keydown',function(e) {
+		window.scrollTo(0,0);
 		if((e.which||window.event.keyCode)==27) document.getElementById('search').value = '';
 	});
 };
