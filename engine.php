@@ -28,6 +28,7 @@
 				$q = $this->query($sql);
 				$this->error[] = isset($q['error'])?$q['error']:NULL;
 				for($i=0;$i<$q['count'];$i++){
+					if($q['match'][$i]['header'] == "") continue;
 					$this->data[] = $q['match'][$i];
 					if(!empty($q['match'][$i]['category'])){
 						$this->catFound[] = $q['match'][$i]['category'];
