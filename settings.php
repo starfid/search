@@ -23,7 +23,7 @@
 				"location"		=> "if(gol_pustaka = 'SK',concat('Rak ',penerbit,' &gt; ',kelas),concat('Rak ',kelas))",
 				"additional"		=> "concat(penulis1,'. ',if(gol_pustaka = 'SK',concat('Bimbingan ',editor),penerbit),'. ',th_terbit,'. ', kota,'..')",
 				"entry"			=> "date(tgl_input)",
-				"year"			=> "th_terbit",
+				"pubyear"		=> "th_terbit",
 				"limit"			=> "25",
 			),
 			array(
@@ -34,7 +34,7 @@
 				"location"		=> "concat(nama_jurnal,' &gt; Vol ',volume,' &gt; Nomor ',nomor,' &gt; Tahun ',tahun)",
 				"additional"		=> "concat(penulis,'. ',artikel)",
 				"entry"			=> "date(tgl_input)",
-				"year"			=> "tahun",
+				"pubyear"		=> "tahun",
 				"limit"			=> "25",
 			),
 			array(
@@ -45,7 +45,7 @@
 				"location"		=> "vendor",
 				"additional"		=> "concat(subject,'. ',tahun)",
 				"entry"			=> "tahun",
-				"year"			=> "tahun",
+				"pubyear"		=> "tahun",
 				"limit"			=> "25",
 			),
 			array(
@@ -56,7 +56,7 @@
 				"location"		=> "(select concat(fakultas,' &gt; ',jurusan) from fakultas where fakultas.kd_fakultas = anggota.kd_fakultas)",
 				"additional"		=> "alamat",
 				"entry"			=> "tgl_daftar",
-				"year"			=> "angkatan",
+				"pubyear"		=> "angkatan",
 				"limit"			=> "25",
 			),
 			array(
@@ -67,7 +67,7 @@
 				"location"		=> "concat('http://example.org/',eprintid)",
 				"additional"		=> "abstrak",
 				"entry"			=> "date(entry)",
-				"year"			=> "tahun",
+				"pubyear"		=> "tahun",
 				"limit"			=> "25",
 			),
 			
