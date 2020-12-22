@@ -37,7 +37,8 @@
 
 			if(!is_null($this->data)){
 				if($this->isSearch){
-					//rank multiple sql categories results
+					
+					//rank multiple sql results based by rank key
 					$rank = array();
 
 					//PHP 5.3
@@ -45,7 +46,7 @@
 					
 					//PHP 5.4+
 					//$rank = array_column($this->data, 'rank');
-					
+
 					array_multisort($rank, SORT_DESC, $this->data);
 				}
 				$this->catFound = array_count_values($this->catFound);
@@ -77,7 +78,9 @@
 
 
 		function build_keywords(){
+
 			$fullSentence = strtolower($this->keywords['original']['placeholder']);
+
 			$this->keywords['original']['full'] = $fullSentence;
 			$this->keywords['original']['words'] = explode(' ',$fullSentence);
 			$this->keywords['new']['without_noise'] = array_diff($this->keywords['original']['words'],$_SESSION['dictionary']['noise']);
@@ -128,6 +131,10 @@
 				$col[] = "\n\t".$param['header']." as header";
 				$col[] = "\n\t".$param['location']." as location";
 				$col[] = "\n\t".$param['additional']." as additional";
+				$col[] = "\n\t".$param['entry']." as entry";
+				$col[] = "\n\t".$param['pubyear']." as pubyear";
+				
+				
 				$cols = implode(',',$col);
 
 				$having = $this->selectedCat != "all"?"having category = '".$this->selectedCat."'":"";
@@ -143,12 +150,12 @@
 						$column = "trim(lcase(".$column."))";
 
 						$where[] = "\n\t".$column." like '%".$this->keywords['original']['full']."%'";
-
+	
 						$rank[] = "\n\tcast(if(".$column."='".$this->keywords['original']['full']."','400',0) as signed) ";
 
 						if(!in_array($this->keywords['original']['full'],$_SESSION['dictionary']['low'])){
-							$rank[] = "\n\tcast(if(instr(concat(".$column.",' '),'".$this->keywords['original']['full']."')>0,'300',0) as signed) ";
-							$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),'".$this->keywords['original']['full']."')>0,'250',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat('xzxz',".$column."),'xzxz".$this->keywords['original']['full']."')>0,'300',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat(".$column.",'xzxz'),'".$this->keywords['original']['full']."xzxz')>0,'250',0) as signed) ";
 						}
 
 						foreach($this->keywords['new']['final'] as $word){
@@ -172,7 +179,7 @@
 						}
 					}
 
-					$rank = implode(" + ",$rank)."as rank,";
+					$rank = implode(" + ",$rank)." as rank,";
 					$where = "where ".implode(" or ", $where);
 					$orderBy = "order by rank desc";
 				}
