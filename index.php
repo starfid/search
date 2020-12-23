@@ -8,7 +8,7 @@
 	require('view.php');
 	$display = new Serp($result, $settings['preference']);
 
-	echo $display->data;
+	echo $display->content;
 
 	//echo microtime(true)-$benchmark;
 	//unset($_SESSION['dictionary']);
