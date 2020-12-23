@@ -127,7 +127,7 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 
-			$s .= "\n\t<div>x</div>";
+
 
 			$this->content = $s;
 
