@@ -19,6 +19,9 @@
 
 			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
 			$this->build_sql();
+			
+			//print_r($this->sql);
+			
 			$this->preparing_result();
 			$this->error = array_filter($this->error);
 		}
@@ -84,6 +87,19 @@
 
 			$this->keywords['original']['full'] = $fullSentence;
 			$this->keywords['original']['words'] = explode(' ',$fullSentence);
+
+			//new word from striped word contain non-alpha 
+			$newAlpha = array();
+			foreach($this->keywords['original']['words'] as $word){
+				$onlyAlpha = preg_replace('/[^a-z]/i','', $word);
+				if($onlyAlpha != $word) {
+					$newAlpha[] =  $onlyAlpha;
+				}
+			}
+			if(count($newAlpha)>0){
+				$this->keywords['original']['words'] = array_merge($this->keywords['original']['words'],$newAlpha);
+			}
+
 			$this->keywords['new']['without_noise'] = array_diff($this->keywords['original']['words'],$_SESSION['dictionary']['noise']);
 			$this->keywords['new']['similarity'] = array();
 
@@ -134,9 +150,10 @@
 				$col[] = "\n\t".$param['additional']." as additional";
 				$col[] = "\n\t".$param['entry']." as entry";
 				$col[] = "\n\t".$param['pubyear']." as pubyear";
+				$col[] = "\n\t".$param['lang']." as lang";
+				$col[] = "\n\t(length(".$param['index'][0].") - length(replace(".$param['index'][0].", ' ', '')) + 1) as wordcount";
 				
-				
-				$cols = implode(',',$col);
+
 
 				$having = $this->selectedCat != "all"?"having category = '".$this->selectedCat."'":"";
 				$orderBy = "";
@@ -155,44 +172,40 @@
 	
 						$rank[] = "\n\tcast(if(".$column."='".$this->keywords['original']['full']."','400',0) as signed) ";
 
+						$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 1,'10',0) as signed) ";
+						$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2,'9',0) as signed) ";
+						$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 3,'8',0) as signed) ";
+						
 						if(!in_array($this->keywords['original']['full'],$_SESSION['dictionary']['low'])){
-							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap."".$this->keywords['original']['full']."')>0,'300',0) as signed) ";
-							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$this->keywords['original']['full']."".$gap."')>0,'250',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap."".$this->keywords['original']['full']."')>0,'45',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$this->keywords['original']['full']."".$gap."')>0,'40',0) as signed) ";
 						}
 
 						foreach($this->keywords['new']['final'] as $word){
 							$where[] = "\n\t".$column." like '%".$word."%'";
 
 							if(!in_array($word,$_SESSION['dictionary']['low'])){
-								$rank[] = "\n\tcast(if( ".$column." = '".$word."' and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 1 ,'200',0) as signed) ";
-								$rank[] = "\n\tcast(if( ".$column." = '".$word."' and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) > 1 ,'200',0) as signed) ";
-
-								$rank[] = "\n\tcast(if( instr(concat('".$gap."',".$column."),'".$gap."".$word."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2 ,'21',0) as signed) ";
-								$rank[] = "\n\tcast(if( instr(concat(".$column.",'".$gap."'),'".$word."".$gap."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2 ,'20',0) as signed) ";
-
-								$rank[] = "\n\tcast(if( instr(concat('".$gap."',".$column."),'".$gap."".$word."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 3 ,'16',0) as signed) ";
-								$rank[] = "\n\tcast(if( instr(concat(".$column.",'".$gap."'),'".$word."".$gap."')>0 and (length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 3 ,'15',0) as signed) ";
-
-
-								$rank[] = "\n\tcast(if(instr(concat(' ',".$column.",' '),' ".$word." ')>0,'6',0) as signed)";
-								$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),' ".$word."')>0,'7',0) as signed)";
-								$rank[] = "\n\tcast(if(instr(concat(".$column.",' '),'".$word." ')>0,'2',0) as signed)";
+								$rank[] = "\n\tcast(if(instr(concat(' ',".$column.",' '),' ".$word." ')>0,'6',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),' ".$word."')>0,'7',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(concat(".$column.",' '),'".$word." ')>0,'2',0) as signed) ";
 							}
 							else {
-								$rank[] = "\n\tcast(if(instr(concat(' ',".$column.",' '),' ".$word." ')>0,'3',0) as signed)";
-								$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),' ".$word."')>0,'2',0) as signed)";
-								$rank[] = "\n\tcast(if(instr(concat(".$column.",' '),'".$word." ')>0,'1',0) as signed)";
+								$rank[] = "\n\tcast(if(instr(concat(' ',".$column.",' '),' ".$word." ')>0,'3',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),' ".$word."')>0,'2',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(concat(".$column.",' '),'".$word." ')>0,'1',0) as signed) ";
 							}
 						}
 					}
 
 					$rank = implode(" + ",$rank)." as rank,";
 					$where = "where ".implode(" or ", $where);
-					$orderBy = "order by rank desc";
+					$orderBy = "order by rank desc, wordcount asc";
 				}
 				else {
 					$orderBy = "order by ".$entry." desc";
 				}
+
+				$cols = implode(',',$col);
 				
 				$this->sql[] = $select." ".$rank." ".$cols."\nfrom ".$table."\n".$where."\n".$having."\n".$orderBy."\nlimit ".$limit;
 			}
