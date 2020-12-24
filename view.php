@@ -99,8 +99,6 @@
 				$s .= "\n\t\t\t\t</dl>";
 			}
 
-			
-
 			elseif($this->emptyResult){
 				$s .= "\n\t\t\t\t<dl class=\"warning\">\n\t\t\t\t\t<dd>";
 				$s .= "No results found for <strong>".$this->placeholder."</strong> ";
@@ -113,8 +111,11 @@
 					$data = $this->data[$i];
 					
 					$title = !$this->emptyKeyword && $this->debug?" title=\"".$data['rank']."\"":"";
-
-					$s .= "\n\t\t\t\t<dl".$title.">";
+					$category = " data-cat=\"".$data['category']."\"";
+					$lang = " data-lang=\"".$data['lang']."\"";
+					$pubyear = " data-year=\"".$data['pubyear']."\"";
+					
+					$s .= "\n\t\t\t\t<dl".$title.$category.$lang.$pubyear.">";
 					$s .= "\n\t\t\t\t\t<dt>".$this->highlight(stripslashes(stripslashes($data['header'])))."</dt>";
 					$s .= "\n\t\t\t\t\t<dd>";
 					$s .= "\n\t\t\t\t\t\t<div class=\"loc\">".ucfirst($data['category'])." &gt; ".ucfirst($data['location'])."</div>";
@@ -127,9 +128,7 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 
-
-
-			$this->content = $s;
+			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 
 		}
 
