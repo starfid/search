@@ -24,6 +24,7 @@
 				"additional"		=> "concat(penulis1,'. ',if(gol_pustaka = 'SK',concat('Bimbingan ',editor),penerbit),'. ',th_terbit,'. ', kota,'..')",
 				"entry"			=> "date(tgl_input)",
 				"pubyear"		=> "th_terbit",
+				"lang"			=> '(select bhs from bahasa where bahasa.kd_bhs = buku.kd_bhs)',
 				"limit"			=> "25",
 			),
 			array(
@@ -35,6 +36,7 @@
 				"additional"		=> "concat(penulis,'. ',artikel)",
 				"entry"			=> "date(tgl_input)",
 				"pubyear"		=> "tahun",
+				"lang"			=> "'indonesia'",
 				"limit"			=> "25",
 			),
 			array(
@@ -46,6 +48,7 @@
 				"additional"		=> "concat(subject,'. ',tahun)",
 				"entry"			=> "tahun",
 				"pubyear"		=> "tahun",
+				"lang"			=> "'english'",
 				"limit"			=> "25",
 			),
 			array(
@@ -56,6 +59,7 @@
 				"location"		=> "(select concat(fakultas,' &gt; ',jurusan) from fakultas where fakultas.kd_fakultas = anggota.kd_fakultas)",
 				"additional"		=> "alamat",
 				"entry"			=> "tgl_daftar",
+				"lang"			=> "'indonesia'",
 				"pubyear"		=> "angkatan",
 				"limit"			=> "25",
 			),
@@ -68,6 +72,7 @@
 				"additional"		=> "abstrak",
 				"entry"			=> "date(entry)",
 				"pubyear"		=> "tahun",
+				"lang"			=> "'indonesia'",
 				"limit"			=> "25",
 			),
 			
