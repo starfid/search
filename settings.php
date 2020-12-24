@@ -89,17 +89,18 @@
 				'title'			=> 'Protect Each Other',
 				'desc'			=> 'Love your family and friends, wear a face mask'
 			),
-			'debug'			=> true,
-			'categories'		=> array(
+			'categories'	=> array(
 				'people'		=> 'Student and employee',
 				'buku' 			=> 'Collections at level 3 and 4',
 				'skripsi' 		=> 'Collections at level 2',
-				'multimedia' 		=> 'Collection at level 2',
+				'multimedia' 	=> 'Collection at level 2',
 				'laporan' 		=> 'Collection at level 2',
 				'jurnal' 		=> 'Collection at level 2',
 				'ebook' 		=> 'Online journal subscription',
-				'repository' 		=> 'Online collections'
+				'repository' 	=> 'Online collections'				
 			),
+			'debug'			=> true,
+			'minimizeHTML'	=> true,
 		)
 
 	);
