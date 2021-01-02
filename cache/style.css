@@ -90,7 +90,7 @@ dd {font-size:14px;}
 	#search, #benchmark {width:86%;}
 	#benchmark {margin:8px 0 0 0;padding:0 0 0 18px}
 	#sideBar {background-color:#F6F6F5;display:none;width:100%;position:absolute;z-index:2;left:0;border-top-left-radius: 20px;border-top-right-radius: 20px;}
-	.segment {margin:18px;color:black}
+	.segment {margin:18px;color:black!important}
 	#catswrap {width:100%}
 	#catswrap {overflow-x:scroll;}
 	#cats {margin-left:16px;}
@@ -123,5 +123,5 @@ dd {font-size:14px;}
 @media (prefers-color-scheme: dark) and (max-width: 970px) {
 	#sideBar {background-color:white}
 	dl {background-color:#272727;}
-	.segment {color:black!important}
+	#sideBar div, .segment {color:black!important}
 }
