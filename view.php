@@ -1,7 +1,7 @@
 <?php
 	class Serp extends Tool{
 		public $content, $keywords;
-		private $data, $selectedCat, $allCats, $name, $siteTitle, $emptyResult, $debug, $placeholder, $error;
+		private $data, $selectedCat, $allCats, $catFound, $name, $siteTitle, $emptyResult, $debug, $placeholder, $error;
 
 		function __construct($result, $preference){
 			$this->keywords = $result->keywords;
@@ -12,11 +12,20 @@
 			$this->selectedCat = $result->selectedCat;
 			$this->pref = $preference;
 			$this->debug = $preference['debug'];
-
+			
+			$this->benchmarkStarted = $result->benchmarkStarted;
 			$this->data = $result->data;
 			$this->error = $result->error;
 			$this->emptyResult = is_null($result->data)?True:False;
-			$this->emptyKeyword = (!isset($_GET['search']) || empty($_GET['search']))?True:False;
+			$this->emptyKeyword = !$result->isSearch?true:false;
+
+			if(!$this->emptyKeyword && isset($this->keywords['new']['final'])){
+				array_multisort(array_map('strlen', $this->keywords['new']['final']), $this->keywords['new']['final']);
+				$this->keywords['new']['final'] = array_reverse($this->keywords['new']['final']);
+				$this->keywords['new']['final'] = array_values(array_filter($this->keywords['new']['final'], function($word) {
+					return strlen($word) > 2;
+				}));
+			}
 			
 			$this->placeholder = isset($this->keywords['original'])?$this->keywords['original']['placeholder']:"";
 			
@@ -43,12 +52,12 @@
 			$s .= "\n\t\t<link href=\"cache/style.css\" rel=\"stylesheet\" type=\"text/css\" />";
 			$s .= "\n\t\t<script src=\"cache/script.js\" type=\"text/javascript\"></script>";
 			$s .= "\n\t</head>";
-			$s .= "\n\t<body class=\"main-bg\">";
+			$s .= "\n\t<body id=\"main-bg\">";
 
 			if($this->emptyKeyword){
 				$s .= "\n\t\t\t<div id=\"campaign\">";
 				
-				$s .= "\n\t\t\t\t<div class=\"mid1000\">";
+				$s .= "\n\t\t\t\t<div class=\"center\">";
 				
 				$s .= "\n\t\t\t\t\t<h1>".$this->pref['campaign']['title']."</h1>";
 				$s .= "\n\t\t\t\t\t<h2>".$this->pref['campaign']['desc']."</h2>";
@@ -58,9 +67,9 @@
 				$s .= "\n\t\t\t\t<div id=\"edge\" style=\"\">&nbsp;</div>";
 				$s .= "\n\t\t\t</div>";
 			}
-
+			
 			$s .= "\n\t\t<div>";
-			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float mid1000\">";
+			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float center\">";
 			
 			$s .= "\n\t\t\t\t<div id=\"searchBox\">";
 			$s .= "\n\t\t\t\t\t<form method=\"get\" action=\"?\">";
@@ -75,18 +84,40 @@
 
 			if(!$this->emptyKeyword){
 				$s .= "\n\t\t<div id=\"catswrap\">";
-				$s .= "\n\t\t\t<ul id=\"cats\" class=\"mid970\">";
+				$s .= "\n\t\t\t<ul id=\"cats\" class=\"center\">";
 				
 				foreach($this->allCats as $category){
 					$borderBottom = $category==$this->selectedCat?" class=\"selCat\"":"";
-					$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".ucwords($category)."</li>";
+					$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".$category."</li>";
 				}
 
+				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"lang\">Lang</li>";
+				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"year\">Year</li>";
+								
 				$s .= "\n\t\t\t</ul>";
 				$s .= "\n\t\t</div>";
 			}
-		
-			$s .= "\n\t\t<div id=\"content\" class=\"float mid1000\">";
+			
+			if(!$this->emptyResult && $this->pref['benchmark']){
+				$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
+			}
+
+			$s .= "\n\t\t<div id=\"main\" class=\"float center\">";
+
+			if(!$this->emptyResult){
+				$selected = $this->data[0];
+				$s .= "\n\t\t\t<div class=\"right\" id=\"sideBar\">";
+				$s .= "\n\t\t\t\t<div class=\"segment\">";
+				$s .= "\n\t\t\t\t\t<h1 id='header'>".$selected['header']."</h1>";
+				$s .= "\n\t\t\t\t\t<div id='additional'>".$selected['additional']."</div>";
+				$s .= "\n\t\t\t\t\t<div><b>Category:</b> <span id='category'>".$selected['category']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'>".$selected['location']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Published Year:</b> <span id='pubyear'>".$selected['pubyear']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".$selected['lang']."</span></div>";
+				$s .= "\n\t\t\t\t</div>";
+				$s .= "\n\t\t\t</div>";
+			}
+
 
 			$s .= "\n\t\t\t<div class=\"left\" id=\"results\">";
 
@@ -98,7 +129,6 @@
 				$s .= "\n\t\t\t\t\t</dd>";
 				$s .= "\n\t\t\t\t</dl>";
 			}
-
 			elseif($this->emptyResult){
 				$s .= "\n\t\t\t\t<dl class=\"warning\">\n\t\t\t\t\t<dd>";
 				$s .= "No results found for <strong>".$this->placeholder."</strong> ";
@@ -110,7 +140,7 @@
 				for($i=0;$i<count($this->data);$i++){
 					$data = $this->data[$i];
 					
-					$title = !$this->emptyKeyword && $this->debug?" title=\"".$data['rank']."\"":"";
+					$title = !$this->emptyKeyword && $this->debug && isset($data['rank'])?" title=\"No. ".($i+1).". Rank ".$data['rank']."\"":"";
 					$category = " data-cat=\"".$data['category']."\"";
 					$lang = " data-lang=\"".$data['lang']."\"";
 					$pubyear = " data-year=\"".$data['pubyear']."\"";
@@ -118,7 +148,7 @@
 					$s .= "\n\t\t\t\t<dl".$title.$category.$lang.$pubyear.">";
 					$s .= "\n\t\t\t\t\t<dt>".$this->highlight(stripslashes(stripslashes($data['header'])))."</dt>";
 					$s .= "\n\t\t\t\t\t<dd>";
-					$s .= "\n\t\t\t\t\t\t<div class=\"loc\">".ucfirst($data['category'])." &gt; ".ucfirst($data['location'])."</div>";
+					$s .= "\n\t\t\t\t\t\t<div class=\"loc\"><span class=\"itemCat\">".ucfirst($data['category'])."</span> &gt; <span class=\"itemLoc\">".ucfirst($data['location'])."</span></div>";
 					$s .= "\n\t\t\t\t\t\t<div class=\"info\">".$this->highlight(stripslashes($data['additional']))."</div>";
 					$s .= "\n\t\t\t\t\t</dd>";
 					$s .= "\n\t\t\t\t</dl>";
@@ -169,7 +199,7 @@
 			) return $txt;
 
 			$words = $this->keywords['new']['final'];
-			array_multisort(array_map('strlen', $words), $words);
+			//array_multisort(array_map('strlen', $words), $words);
 			$txt = preg_replace("#(".implode("|",$words).")#i", "<strong>$1</strong>", $txt);
 			return $txt;
 		}
