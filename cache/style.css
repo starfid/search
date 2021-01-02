@@ -26,7 +26,7 @@ ul li {list-style:none}
 }
 #campaign .center {color:white;height:350px;}
 
-#campaign h1 {font-size:40px;font-weight:bolder;padding:200px 0px 0px 0px;color:white}
+#campaign h1 {font-size:40px;font-weight:bolder;padding:200px 0px 0px 0px;}
 #campaign h2 {font-size:20px;margin-bottom:90px;padding:10px 0px}
 
 #edge {background-color:#ffffff;height:10px;border-top-left-radius: 20px;border-top-right-radius: 20px;position: absolute;bottom: 0;left: 0;width:100%;font-family:10px}
@@ -115,7 +115,7 @@ dd {font-size:14px;}
 	#magnify:before, #magnify:after {content:url('magnify-dark.png')}
 	.loc {color:#61B12E}
 	#search {color:#FCFCFC}
-	.selCat, dt, h1 {color:#BBBBBB!important}
+	.selCat, dt, #campaign .center {color:#BBBBBB!important}
 	dl strong {color:#D4D4D4}
 	dd, #sideBar div {color:#727272}
 	#campaign {background-color: #666666;}
@@ -123,5 +123,5 @@ dd {font-size:14px;}
 @media (prefers-color-scheme: dark) and (max-width: 970px) {
 	#sideBar {background-color:white}
 	dl {background-color:#272727;}
-	h1, .segment {color:black!important}
+	.segment {color:black!important}
 }
