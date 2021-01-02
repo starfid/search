@@ -99,8 +99,10 @@
 				'ebook' 		=> 'Online journal subscription',
 				'repository' 	=> 'Online collections'				
 			),
+			'benchmark'		=> true,
 			'debug'			=> true,
-			'minimizeHTML'	=> true,
+			'minimizeHTML'		=> true,
+
 		)
 
 	);
