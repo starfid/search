@@ -1,9 +1,10 @@
 <?php
 	class Search extends Database {
-		public $benchmark, $data, $selectedCat, $result, $catfound, $keywords, $sql, $nodata, $error = Array();
-		private $settings, $isSearch;
+		public $data, $selectedCat, $result, $catFound, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch;
+		private $settings;
 
 		function __construct($settings){
+			$this->benchmarkStarted = microtime(true);
 			$this->settings = $settings;
 			parent::__construct($settings['database']);
 
@@ -19,11 +20,49 @@
 
 			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
 			$this->build_sql();
-			
-			//print_r($this->sql);
-			
 			$this->preparing_result();
 			$this->error = array_filter($this->error);
+		}
+
+		function correction(){
+			$oldData = $this->data;
+			$newData = array();
+			$dataCount = count($oldData);
+
+			for($i=0;$i<$dataCount;$i++){
+				$oldData[$i]['corrected'] = false;
+				$oldData[$i]['rankBefore'] = $oldData[$i]['rank'];
+
+				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
+				$oldData[$i]['indexed'] = $indexed;
+
+				$indexed = explode(' ',$indexed);
+				$words = array_count_values($indexed);
+				
+				foreach($words as $word => $count){
+					if(in_array($word,$this->keywords['new']['final']) && $count > 1 && $oldData[$i]['rank'] > 4){
+						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 4;
+						$oldData[$i]['corrected'] = true;
+					}
+					$oldData[$i]['diff'][$word] = $count;
+					if($count==1 && in_array($word,$this->keywords['new']['final'])){
+						$oldData[$i]['found'][] = $word;
+					}
+				}
+
+				if(isset($oldData[$i]['found']) && count(array_diff($this->keywords['new']['final'],$oldData[$i]['found']))<1){
+					$oldData[$i]['rank'] = $oldData[$i]['rank'] + 100;
+				}
+
+				if($indexed[0] == strtolower(substr(trim($oldData[$i]['additional']),0,strlen($indexed[0])))){
+					$newAdditional = explode('.',$oldData[$i]['additional']);
+					array_shift($newAdditional);
+					$oldData[$i]['additional'] = preg_replace('/^[^a-z]+/i', '',implode('.',$newAdditional));
+				}
+
+				$newData[] = $oldData[$i];
+			}
+			$this->data = $newData;
 		}
 
 		function preparing_result(){
@@ -41,6 +80,9 @@
 
 			if(!is_null($this->data)){
 				if($this->isSearch){
+					
+
+					$this->correction();
 					
 					//rank multiple sql results based by rank key
 					$rank = array();
@@ -82,7 +124,6 @@
 
 
 		function build_keywords(){
-
 			$fullSentence = strtolower($this->keywords['original']['placeholder']);
 
 			$this->keywords['original']['full'] = $fullSentence;
@@ -101,6 +142,16 @@
 			}
 
 			$this->keywords['new']['without_noise'] = array_diff($this->keywords['original']['words'],$_SESSION['dictionary']['noise']);
+
+			//full word alternative from permutation
+			$wordCount = count($this->keywords['new']['without_noise']);
+			if($wordCount == count($this->keywords['original']['words']) && $wordCount > 1 && $wordCount < 4){
+				$permut = $this->permutation($this->keywords['new']['without_noise']);
+				foreach($permut as $word){
+					if($word != $this->keywords['original']['words']) $this->keywords['new']['fullalternative'][] = implode(' ',$word);
+				}
+			}
+
 			$this->keywords['new']['similarity'] = array();
 
 			foreach($this->keywords['new']['without_noise'] as $words){
@@ -108,6 +159,13 @@
 					$colon = explode(',',$_SESSION['dictionary']['similarity'][$words]);
 					foreach($colon as $word){
 						$this->keywords['new']['similarity'][] = str_replace("xslashx","'",$word);
+					}
+				}
+				if(isset($_SESSION['dictionary']['suffix_exception'])){
+					foreach($_SESSION['dictionary']['suffix_exception'] as $suffix => $exception){
+						if(substr($words,-strlen($suffix)) == $suffix && !in_array($words,$exception)){
+							$this->keywords['new']['similarity'][] = substr($words,0,-strlen($suffix));
+						}
 					}
 				}
 			}
@@ -122,7 +180,7 @@
 
 			//remove tiny word
 			foreach($this->keywords['new']['merge'] as $words){
-				if(strlen($words)>1) $this->keywords['new']['final'][] = $words;
+				if(strlen($words)>2) $this->keywords['new']['final'][] = $words;
 			}
 
 			if(!isset($this->keywords['new']['final'])){
@@ -133,6 +191,21 @@
 			//sort
 			isset($this->keywords['new']['final']) && sort($this->keywords['new']['final']);
 
+		}
+		function permutation($items, $perms = array( ), &$return = array()) {
+			if (empty($items)) {
+				$return[] = array_values($perms);
+			}
+			else {
+				for ($i = count($items) - 1; $i >= 0; --$i) {
+					 $newitems = $items;
+					 $newperms = $perms;
+					 list($foo) = array_splice($newitems, $i, 1);
+					 array_unshift($newperms, $foo);
+					$this->permutation($newitems, $newperms,$return);
+				 }
+				return $return;
+			}
 		}
 
 		function build_sql(){
@@ -153,8 +226,6 @@
 				$col[] = "\n\t".$param['lang']." as lang";
 				$col[] = "\n\t(length(".$param['index'][0].") - length(replace(".$param['index'][0].", ' ', '')) + 1) as wordcount";
 				
-
-
 				$having = $this->selectedCat != "all"?"having category = '".$this->selectedCat."'":"";
 				$orderBy = "";
 				$rank = "";
@@ -169,21 +240,52 @@
 						$column = "trim(lcase(".$column."))";
 
 						$where[] = "\n\t".$column." like '%".$this->keywords['original']['full']."%'";
-	
+
+						if(array_key_exists("fullalternative",$this->keywords['new'])){
+							foreach($this->keywords['new']['fullalternative'] as $alternative){
+								$where[] = "\n\t".$column." like '%".$alternative."%'";	
+								$rank[]  = "\n\tcast(if(".$column."='".$alternative."','390',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$alternative."')>0,'43',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$alternative.$gap."')>0,'38',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(".$column.",'".$alternative."')>0,'32',0) as signed) ";
+							}
+						}
+
 						$rank[] = "\n\tcast(if(".$column."='".$this->keywords['original']['full']."','400',0) as signed) ";
 
-						$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 1,'10',0) as signed) ";
-						$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 2,'9',0) as signed) ";
-						$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = 3,'8',0) as signed) ";
+						$fullWordsCount = str_word_count($this->keywords['original']['full']);
+						if($fullWordsCount > 1){
+							$rank[] = "\n\tcast(if(instr(replace(replace(".$column.",'-',' '),'.',' '),'".$this->keywords['original']['full']."')>0,'32',0) as signed) ";
+							if($fullWordsCount > 2 && $fullWordsCount < 5){
+								$word1and2 = explode(' ',$this->keywords['original']['full']);
+								$word1and2 = $word1and2[0]." ".$word1and2[1];
+								$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'3',0) as signed) ";
+								
+								if($fullWordsCount==4){
+									$word1and2 = array_slice(explode(' ',$this->keywords['original']['full']),-2);
+									$word1and2 = $word1and2[0]." ".$word1and2[1];
+									$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'2',0) as signed) ";
+									$rank[] = "\n\tcast(if(instr(".$column.",'".$word1and2."')>0,'5',0) as signed) ";
+								}
+								
+							}
+						}
+
+						//add bigger point for shorter sentence
+						for($i=1;$i<7;$i++){
+							$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(8-$i)."',0) as signed) ";
+						}
 						
 						if(!in_array($this->keywords['original']['full'],$_SESSION['dictionary']['low'])){
-							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap."".$this->keywords['original']['full']."')>0,'45',0) as signed) ";
-							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$this->keywords['original']['full']."".$gap."')>0,'40',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$this->keywords['original']['full']."')>0,'45',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$this->keywords['original']['full'].$gap."')>0,'40',0) as signed) ";
 						}
 
 						foreach($this->keywords['new']['final'] as $word){
+							if(strlen($word)<3) continue;
 							$where[] = "\n\t".$column." like '%".$word."%'";
 
+							
 							if(!in_array($word,$_SESSION['dictionary']['low'])){
 								$rank[] = "\n\tcast(if(instr(concat(' ',".$column.",' '),' ".$word." ')>0,'6',0) as signed) ";
 								$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),' ".$word."')>0,'7',0) as signed) ";
@@ -194,6 +296,7 @@
 								$rank[] = "\n\tcast(if(instr(concat(' ',".$column."),' ".$word."')>0,'2',0) as signed) ";
 								$rank[] = "\n\tcast(if(instr(concat(".$column.",' '),'".$word." ')>0,'1',0) as signed) ";
 							}
+							
 						}
 					}
 
