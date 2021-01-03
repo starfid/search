@@ -106,10 +106,7 @@ window.onload = function(){
 	});
 };
 
-var originKeyword, height = parseInt(window.innerHeight),
-topScroll = parseInt(window.pageYOffset),
-topPop = parseInt(topScroll+(height*0.35))
-gap = [150,70,30,10];
+var originKeyword, gap = [150,70,30,10];
 
 submit = function(){
 	$('form')[0].submit();
@@ -143,6 +140,7 @@ setSideBar = function(el){
 	$('#pubyear').text(strip(el.parentNode.dataset.year));
 	$('#language').text(strip(el.parentNode.dataset.lang));
 	if(screen.width < 767){
+		var topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35))
 		$('body').css('overflow','hidden');
 		$('body').append({
 			'element':'div',
@@ -177,6 +175,7 @@ setSideBar = function(el){
 },
 closeSideBar = function(){
 	if($('#popBase').length < 1) return false;
+	var topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35))
 	gap.reverse();
 	$.timer(gap.length,30,
 		function(i){
