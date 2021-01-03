@@ -152,26 +152,44 @@
 				}
 			}
 
-			$this->keywords['new']['similarity'] = array();
+			$this->keywords['new']['alternative'] = array();
 
 			foreach($this->keywords['new']['without_noise'] as $words){
+
+				//checking similarity dictionary
 				if(isset($_SESSION['dictionary']['similarity'][$words])) {
 					$colon = explode(',',$_SESSION['dictionary']['similarity'][$words]);
 					foreach($colon as $word){
-						$this->keywords['new']['similarity'][] = str_replace("xslashx","'",$word);
+						$this->keywords['new']['alternative'][] = str_replace("xslashx","'",$word);
 					}
 				}
+
+				//checking suffix dictionary
 				if(isset($_SESSION['dictionary']['suffix_exception'])){
 					foreach($_SESSION['dictionary']['suffix_exception'] as $suffix => $exception){
 						if(substr($words,-strlen($suffix)) == $suffix && !in_array($words,$exception)){
-							$this->keywords['new']['similarity'][] = substr($words,0,-strlen($suffix));
+							$this->keywords['new']['alternative'][] = substr($words,0,-strlen($suffix));
 						}
 					}
+				}
+
+				//checking prefix dictionary
+				if(isset($_SESSION['dictionary']['prefix_exception'])){
+					foreach($_SESSION['dictionary']['prefix_exception'] as $prefix => $exception){
+						if(substr($words,0,strlen($prefix)) == $prefix && !in_array($words,$exception)){
+							$this->keywords['new']['alternative'][] = substr($words,strlen($prefix));
+						}
+					}
+				}
+
+				//checking duplicate letter, offer alternate without letter duplication
+				if(preg_match('/(\w)\1+/', $words)){
+					$this->keywords['new']['alternative'][] = preg_replace('/(\w)\1+/', '$1', $words);
 				}
 			}
 			
 			$this->keywords['new']['merge'] = array_merge(
-				$this->keywords['new']['similarity'],
+				$this->keywords['new']['alternative'],
 				$this->keywords['new']['without_noise']
 			);
 
