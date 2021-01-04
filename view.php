@@ -21,6 +21,7 @@
 
 			if(!$this->emptyKeyword && isset($this->keywords['new']['final'])){
 				array_multisort(array_map('strlen', $this->keywords['new']['final']), $this->keywords['new']['final']);
+				$this->keywords['new']['final'] = array_map('trim',$this->keywords['new']['final']);
 				$this->keywords['new']['final'] = array_reverse($this->keywords['new']['final']);
 				$this->keywords['new']['final'] = array_values(array_filter($this->keywords['new']['final'], function($word) {
 					return strlen($word) > 2;
@@ -199,7 +200,6 @@
 			) return $txt;
 
 			$words = $this->keywords['new']['final'];
-			//array_multisort(array_map('strlen', $words), $words);
 			$txt = preg_replace("#(".implode("|",$words).")#i", "<strong>$1</strong>", $txt);
 			return $txt;
 		}
