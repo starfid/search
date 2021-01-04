@@ -14,7 +14,8 @@
 
 			if(isset($_GET['search']) && strlen(trim($_GET['search']))>1){
 				$this->isSearch = true;
-				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9 ]/',' ',$_GET['search'])));
+				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\-\' ]/',' ',$_GET['search'])));
+				$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
 				$this->build_keywords();
 			}
 
@@ -26,7 +27,7 @@
 
 		
 		function build_keywords(){
-			$fullSentence = strtolower($this->keywords['original']['placeholder']);
+			$fullSentence = strtolower($this->keywords['original']['clean']);
 
 			$this->keywords['original']['full'] = $fullSentence;
 			$this->keywords['original']['words'] = explode(' ',$fullSentence);
@@ -213,11 +214,12 @@
 
 					foreach($param['index'] as $column){
 						$column = "trim(lcase(replace(".$column.",'-',' ')))";
-
-						$where[] = "\n\t".$column." like '%".$this->keywords['original']['full']."%'";
+						$full = addslashes($this->keywords['original']['full']);
+						$where[] = "\n\t".$column." like '%".$full."%'";
 
 						if(array_key_exists("fullalternative",$this->keywords['new'])){
 							foreach($this->keywords['new']['fullalternative'] as $alternative){
+								$alternative = addslashes($alternative);
 								$where[] = "\n\t".$column." like '%".$alternative."%'";	
 								$rank[]  = "\n\tcast(if(".$column."='".$alternative."','390',0) as signed) ";
 								$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$alternative."')>0,'43',0) as signed) ";
@@ -226,18 +228,18 @@
 							}
 						}
 
-						$rank[] = "\n\tcast(if(".$column."='".$this->keywords['original']['full']."','400',0) as signed) ";
+						$rank[] = "\n\tcast(if(".$column."='".$full."','400',0) as signed) ";
 
-						$fullWordsCount = str_word_count($this->keywords['original']['full']);
+						$fullWordsCount = str_word_count($full);
 						if($fullWordsCount > 1){
-							$rank[] = "\n\tcast(if(instr(replace(".$column.",'.',' '),'".$this->keywords['original']['full']."')>0,'32',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(replace(".$column.",'.',' '),'".$full."')>0,'32',0) as signed) ";
 							if($fullWordsCount > 2 && $fullWordsCount < 5){
-								$word1and2 = explode(' ',$this->keywords['original']['full']);
+								$word1and2 = explode(' ',$full);
 								$word1and2 = $word1and2[0]." ".$word1and2[1];
 								$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'3',0) as signed) ";
 								
 								if($fullWordsCount==4){
-									$word1and2 = array_slice(explode(' ',$this->keywords['original']['full']),-2);
+									$word1and2 = array_slice(explode(' ',$full),-2);
 									$word1and2 = $word1and2[0]." ".$word1and2[1];
 									$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'2',0) as signed) ";
 									$rank[] = "\n\tcast(if(instr(".$column.",'".$word1and2."')>0,'5',0) as signed) ";
@@ -251,13 +253,14 @@
 							$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(8-$i)."',0) as signed) ";
 						}
 						
-						if(!in_array($this->keywords['original']['full'],$_SESSION['dictionary']['low'])){
-							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$this->keywords['original']['full']."')>0,'45',0) as signed) ";
-							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$this->keywords['original']['full'].$gap."')>0,'40',0) as signed) ";
+						if(!in_array($full,$_SESSION['dictionary']['low'])){
+							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$full."')>0,'45',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$full.$gap."')>0,'40',0) as signed) ";
 						}
 
 						foreach($this->keywords['new']['final'] as $word){
 							if(strlen(trim($word))<3) continue;
+							$word = addslashes($word);
 							$where[] = "\n\t".$column." like '%".$word."%'";
 
 							
