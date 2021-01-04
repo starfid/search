@@ -14,6 +14,7 @@
 
 			if(isset($_GET['search']) && strlen(trim($_GET['search']))>1){
 				$this->isSearch = true;
+				$_GET['search'] = str_replace("’","'",$_GET['search']);
 				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\-\' ]/',' ',$_GET['search'])));
 				$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
 				$this->build_keywords();
@@ -97,8 +98,8 @@
 				}
 
 				//alternative spelling
-				if(preg_match('/oe|dj|sy/', $words)){
-					$this->keywords['new']['alternative'][] = str_replace(array('oe','dj','sy'),array('u','j','sh'),$words);
+				if(preg_match('/oe|dj|dz|sy/', $words)){
+					$this->keywords['new']['alternative'][] = str_replace(array('oe','dj','dz','sy'),array('u','j','z','sh'),$words);
 				}
 				
 			}
