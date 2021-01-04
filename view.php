@@ -72,10 +72,10 @@
 			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float center\">";
 			
 			$s .= "\n\t\t\t\t<div id=\"searchBox\">";
-			$s .= "\n\t\t\t\t\t<form method=\"get\" action=\"?\">";
+			$s .= "\n\t\t\t\t\t<form method=\"get\" action=\"?\" onsumit=\"return submitting()\">";
 			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".$this->placeholder."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
 			$s .= "\n\t\t\t\t\t\t<input type=\"hidden\" id=\"cat\" name=\"cat\" value=\"".$this->selectedCat."\" />";
-			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" onclick=\"submit();\" />";
+			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" />";
 			$s .= "\n\t\t\t\t\t</form>";
 			$s .= "\n\t\t\t\t</div>";
 
