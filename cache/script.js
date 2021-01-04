@@ -98,28 +98,32 @@ window.onload = function(){
 	$('body').on('keydown',function(e) {
 		if((e.which||window.event.keyCode)==27) $('#search').val(''); $('#search').focus(); window.scrollTo(0,0); closeSideBar();
 	});
+	$('#magnify').on('click',function(){
+		submitting();
+	});
+	$('form').on('submit',function(e){
+		submitting();
+	});
 	$('dl').on('click',function(){
 		this.className != 'warning' && setSideBar(this.getElementsByTagName('dt')[0]);
 	});
-	$('form').on('submit',function(e){
-		originKeyword == $('#search').val() && e.preventDefault();
-	});
 };
 
-var originKeyword, gap = [150,70,30,10];
-
-submit = function(){
-	$('form')[0].submit();
+var originKeyword, gap = [150,70,30,10], fromCat = !!0;
+submitting = function(){
+	window.event.preventDefault();
+	!fromCat && $('#cat').val('all');
+	!(originKeyword == $('#search').val() && !fromCat) && $('form')[0].submit();
 },
 selectCat = function(el){
 	var prevSel = $('#cat').val();
-	if(el.id == "year" || el.id == "lang") return false;
-	
+	if(el.id == "year" || el.id == "lang") return false;	
 	$('#'+prevSel).class('remove','selCat');
 	$(el).class('add','selCat');
 	$('#cat').val(el.id);
 	$('#'+prevSel).val(el.innerHTML);
-	submit();	
+	fromCat = !0;
+	submitting();
 },
 caret = function(){
 	setTimeout(
@@ -127,7 +131,7 @@ caret = function(){
 			var a = $('#search')[0];
 			a.focus();
 			'number'==typeof a.selectionStart?a.selectionStart=a.selectionEnd=a.value.length:'undefined'!=typeof a.createTextRange&&(r=a.createTextRange(),r.collapse(!1),r.select())}
-	,10);
+	,100);
 },
 strip = function(txt){
 	return txt.replace(/(<([^>]+)>)/gi, "");
