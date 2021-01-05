@@ -1,10 +1,12 @@
 <?php
 	class Serp extends Tool{
 		public $content, $keywords;
-		private $data, $selectedCat, $allCats, $catFound, $name, $siteTitle, $emptyResult, $debug, $placeholder, $error;
+		private $data, $selectedCat, $years = array(), $langs = array(), $allCats, $siteTitle, $emptyResult, $debug, $placeholder, $error;
 
 		function __construct($result, $preference){
 			$this->keywords = $result->keywords;
+			
+
 
 			$this->allCats = array_keys($preference['categories']);
 			array_unshift($this->allCats,"all");
@@ -27,6 +29,13 @@
 					return strlen($word) > 2;
 				}));
 			}
+			if(!$this->emptyResult){
+				$this->years = array_unique($result->years);
+				sort($this->years);
+				
+				$this->langs = array_unique($result->langs);
+				sort($this->langs);
+			}
 			
 			$this->placeholder = isset($this->keywords['original'])?$this->keywords['original']['placeholder']:"";
 			
@@ -47,7 +56,7 @@
 			$s .= "\n\t\t<meta content=\"notranslate\" name=\"google\" />";
 			$s .= "\n\t\t<meta content=\"#5D5D5D\" name=\"theme-color\" />";
 			$s .= "\n\t\t<meta content=\"".$this->pref['site']['desc']."\" name=\"description\" />";
-			$s .= "\n\t\t<meta content=\"width=device-width,initial-scale=1,shrink-to-fit=no\" name=\"viewport\" />";
+			$s .= "\n\t\t<meta content=\"width=device-width,initial-scale=1,user-scalable=no,shrink-to-fit=no\" name=\"viewport\" />";
 			$s .= "\n\t\t<meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />";
 			$s .= "\n\t\t<meta content=\"telephone=no\" name=\"format-detection\" />";
 			$s .= "\n\t\t<link href=\"cache/style.css\" rel=\"stylesheet\" type=\"text/css\" />";
@@ -92,17 +101,23 @@
 					$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".$category."</li>";
 				}
 
-				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"lang\">Lang</li>";
-				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"year\">Year</li>";
-								
+				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"tools\">Tools</li>";
+
 				$s .= "\n\t\t\t</ul>";
 				$s .= "\n\t\t</div>";
 			}
 			
-			if(!$this->emptyResult && $this->pref['benchmark']){
-				$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
+			$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
+			$s .= "\n\t\t<div id=\"toolbar\" class=\"center\">";
+			if(count($this->years)>1){
+				$s .= "\n\t\t\t<select id=\"year\"><option value=\"\">All Year</option><option>".implode("</option>\n<option>",$this->years)."</option></select>";
 			}
+			if(count($this->langs)>1){
+				$s .= "\n\t\t\t<select id=\"lang\"><option value=\"\">All Language</option><option>".implode("</option>\n<option>",$this->langs)."</option></select>";
+			}
+			$s .= "\n\t\t</div>";
 
+			
 			$s .= "\n\t\t<div id=\"main\" class=\"float center\">";
 
 			if(!$this->emptyResult){
