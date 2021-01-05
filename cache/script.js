@@ -101,11 +101,26 @@ window.onload = function(){
 	$('#magnify').on('click',function(){
 		submitting();
 	});
+	$('#tools').on('click',function(){
+		$('#toolbar').toggle('display','block','none');
+		$('#benchmark').toggle('display','none','block');
+	});
 	$('form').on('submit',function(e){
 		submitting();
 	});
 	$('dl').on('click',function(){
 		this.className != 'warning' && setSideBar(this.getElementsByTagName('dt')[0]);
+	});
+	$('#year,#lang').on('change',function(){
+		var id = this.id, val = this.value.toLowerCase();
+		$('#results dl').each(function(el){
+			$(el).css('display',
+				($(el).attr('data-'+id) == val) || val == '' ?'block':'none'
+			);
+		});
+		if($('#'+  (id=='year'?'lang':'year') +' option').length>0){
+			$('#'+  (id=='year'?'lang':'year') +' option')[0].selected = true;
+		}
 	});
 };
 
@@ -117,7 +132,7 @@ submitting = function(){
 },
 selectCat = function(el){
 	var prevSel = $('#cat').val();
-	if(el.id == "year" || el.id == "lang") return false;	
+	if(el.id == "tools") return false;	
 	$('#'+prevSel).class('remove','selCat');
 	$(el).class('add','selCat');
 	$('#cat').val(el.id);
