@@ -1,6 +1,6 @@
 <?php
 	class Search extends Database {
-		public $data, $selectedCat, $result, $catFound, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch;
+		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch;
 		private $settings;
 
 		function __construct($settings){
@@ -200,7 +200,7 @@
 				$col[] = "\n\t".$param['additional']." as additional";
 				$col[] = "\n\t".$param['entry']." as entry";
 				$col[] = "\n\t".$param['pubyear']." as pubyear";
-				$col[] = "\n\t".$param['lang']." as lang";
+				$col[] = "\n\tlower(".$param['lang'].") as lang";
 				$col[] = "\n\t(length(".$param['index'][0].") - length(replace(".$param['index'][0].", ' ', '')) + 1) as wordcount";
 				
 				$having = $this->selectedCat != "all"?"having category = '".$this->selectedCat."'":"";
@@ -229,7 +229,7 @@
 							}
 						}
 
-						$rank[] = "\n\tcast(if(".$column."='".$full."','400',0) as signed) ";
+						$rank[] = "\n\tcast(if(trim(replace(".$column.",'.',' '))='".$full."','400',0) as signed) ";
 
 						$fullWordsCount = str_word_count($full);
 						if($fullWordsCount > 1){
@@ -250,8 +250,8 @@
 						}
 
 						//add bigger point for shorter sentence
-						for($i=1;$i<7;$i++){
-							$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(8-$i)."',0) as signed) ";
+						for($i=1;$i<4;$i++){
+							$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(40-$i)."',0) as signed) ";
 						}
 						
 						if(!in_array($full,$_SESSION['dictionary']['low'])){
@@ -303,6 +303,12 @@
 					$this->data[] = $q['match'][$i];
 					if(!empty($q['match'][$i]['category'])){
 						$this->catFound[] = $q['match'][$i]['category'];
+					}
+					if(!empty($q['match'][$i]['pubyear']) && preg_match('/^19|20\d{2}/',$q['match'][$i]['pubyear']) ){
+						$this->years[] = $q['match'][$i]['pubyear'];
+					}
+					if(!empty($q['match'][$i]['lang'])){
+						$this->langs[] = ucwords(strtolower($q['match'][$i]['lang']));
 					}
 				}
 			}
