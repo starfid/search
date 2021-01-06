@@ -250,8 +250,10 @@
 						}
 
 						//add bigger point for shorter sentence
-						for($i=1;$i<4;$i++){
-							$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(40-$i)."',0) as signed) ";
+						if($fullWordsCount < 4){
+							for($i=1;$i<4;$i++){
+								$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(40-$i)."',0) as signed) ";
+							}
 						}
 						
 						if(!in_array($full,$_SESSION['dictionary']['low'])){
