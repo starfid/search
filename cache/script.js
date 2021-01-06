@@ -102,6 +102,7 @@ window.onload = function(){
 		submitting();
 	});
 	$('#tools').on('click',function(){
+		if($('#toolbar > select').length<1) return false;
 		$('#toolbar').toggle('display','block','none');
 		$('#benchmark').toggle('display','none','block');
 	});
