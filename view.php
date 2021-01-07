@@ -62,7 +62,7 @@
 			$s .= "\n\t\t<link href=\"cache/style.css\" rel=\"stylesheet\" type=\"text/css\" />";
 			$s .= "\n\t\t<script src=\"cache/script.js\" type=\"text/javascript\"></script>";
 			$s .= "\n\t</head>";
-			$s .= "\n\t<body id=\"main-bg\">";
+			$s .= "\n\t<body id=\"main-bg\"><div id=\"wrapper\">";
 
 			if($this->emptyKeyword){
 				$s .= "\n\t\t\t<div id=\"campaign\">";
@@ -92,21 +92,19 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 
-			if(!$this->emptyKeyword){
-				$s .= "\n\t\t<div id=\"catswrap\">";
-				$s .= "\n\t\t\t<ul id=\"cats\" class=\"center\">";
-				
-				foreach($this->allCats as $category){
-					$borderBottom = $category==$this->selectedCat?" class=\"selCat\"":"";
-					$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".$category."</li>";
-				}
 
-				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"tools\">Tools</li>";
-
-				$s .= "\n\t\t\t</ul>";
-				$s .= "\n\t\t</div>";
+			$showCat = !$this->emptyKeyword?:" style=\"display:none\"";
+			$s .= "\n\t\t<div id=\"catswrap\"".$showCat.">";
+			$s .= "\n\t\t\t<ul id=\"cats\" class=\"center\">";
+			foreach($this->allCats as $category){
+				$borderBottom = $category==$this->selectedCat?" class=\"selCat\"":"";
+				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".$category."</li>";
 			}
+			$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"tools\">Tools</li>";
+			$s .= "\n\t\t\t</ul>";
+			$s .= "\n\t\t</div>";
 			
+
 			$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
 			$s .= "\n\t\t<div id=\"toolbar\" class=\"center\">";
 			if(count($this->years)>1){
@@ -156,7 +154,7 @@
 				for($i=0;$i<count($this->data);$i++){
 					$data = $this->data[$i];
 					
-					$title = !$this->emptyKeyword && $this->debug && isset($data['rank'])?" title=\"No. ".($i+1).". Rank ".$data['rank']."\"":"";
+					$title = !$this->emptyKeyword && $this->debug && isset($data['rank'])?" title=\"No ".($i+1)." - Rank ".$data['rank']." - Wordcount ".$data['wordcount']."\"":"";
 					$category = " data-cat=\"".$data['category']."\"";
 					$lang = " data-lang=\"".$data['lang']."\"";
 					$pubyear = " data-year=\"".$data['pubyear']."\"";
@@ -174,6 +172,7 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 
+			$s .= "\n\t</div>";
 			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 
 		}
