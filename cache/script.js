@@ -93,8 +93,8 @@ $.init.prototype = {
 };
 
 window.onload = function(){
-	caret();
 	originKeyword = $('#search').val();
+	originKeyword != '' && caret();
 	$('body').on('keydown',function(e) {
 		if((e.which||window.event.keyCode)==27) $('#search').val(''); $('#search').focus(); window.scrollTo(0,0); closeSideBar();
 	});
@@ -220,17 +220,4 @@ toolbar = function(el){
 	if($('#'+  (id=='year'?'lang':'year') +' option').length>0){
 		$('#'+  (id=='year'?'lang':'year') +' option')[0].selected = true;
 	}
-},
-startTyping = function(){
-	$('#campaign .center').remove();
-	$('#campaign').css('height','100px');
-	$.timer(gap.length,30,
-		function(i){
-			$('#campaign').css('height',gap[i]+'px');
-		},
-		function(){
-			$('#campaign').remove();
-			$('#catswrap').css('display','block');
-		}
-	);
 }
