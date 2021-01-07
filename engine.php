@@ -22,6 +22,7 @@
 
 			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
 			$this->build_sql();
+			//print_r($this->sql);
 			$this->preparing_result();
 			$this->error = array_filter($this->error);
 		}
@@ -251,8 +252,9 @@
 
 						//add bigger point for shorter sentence
 						if($fullWordsCount < 4){
+							$stripCol = "replace(replace(".$column.",':',' '),'  ',' ')";
 							for($i=1;$i<4;$i++){
-								$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(40-$i)."',0) as signed) ";
+								$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(14-$i)."',0) as signed) ";
 							}
 						}
 						
