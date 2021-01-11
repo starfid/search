@@ -48,6 +48,7 @@
 		}
 
 		function html(){
+			$random = !$this->debug?:"?r=".rand();
 			$s = "<!DOCTYPE html>";
 			$s .= "\n<html lang='en'>";
 			$s .= "\n\t<head>";
@@ -56,13 +57,13 @@
 			$s .= "\n\t\t<meta content=\"notranslate\" name=\"google\" />";
 			$s .= "\n\t\t<meta content=\"#5D5D5D\" name=\"theme-color\" />";
 			$s .= "\n\t\t<meta content=\"".$this->pref['site']['desc']."\" name=\"description\" />";
-			$s .= "\n\t\t<meta content=\"width=device-width,initial-scale=1,user-scalable=no,shrink-to-fit=no\" name=\"viewport\" />";
+			$s .= "\n\t\t<meta content=\"width=device-width,initial-scale=1,minimum-scale=1,user-scalable=no,shrink-to-fit=no\" name=\"viewport\" />";
 			$s .= "\n\t\t<meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />";
 			$s .= "\n\t\t<meta content=\"telephone=no\" name=\"format-detection\" />";
-			$s .= "\n\t\t<link href=\"cache/style.css\" rel=\"stylesheet\" type=\"text/css\" />";
-			$s .= "\n\t\t<script src=\"cache/script.js\" type=\"text/javascript\"></script>";
+			$s .= "\n\t\t<link href=\"cache/style.css".$random."\" rel=\"stylesheet\" type=\"text/css\" />";
+			$s .= "\n\t\t<script src=\"cache/script.js".$random."\" type=\"text/javascript\"></script>";
 			$s .= "\n\t</head>";
-			$s .= "\n\t<body id=\"main-bg\"><div id=\"wrapper\">";
+			$s .= "\n\t<body id=\"main-bg\">";
 
 			if($this->emptyKeyword){
 				$s .= "\n\t\t\t<div id=\"campaign\">";
@@ -172,7 +173,6 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 
-			$s .= "\n\t</div>";
 			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 
 		}
