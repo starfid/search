@@ -94,7 +94,7 @@
 			$s .= "\n\t\t</div>";
 
 
-			$showCat = !$this->emptyKeyword?:" style=\"display:none\"";
+			$showCat = $this->emptyKeyword?" style=\"display:none\"":"";
 			$s .= "\n\t\t<div id=\"catswrap\"".$showCat.">";
 			$s .= "\n\t\t\t<ul id=\"cats\" class=\"center\">";
 			foreach($this->allCats as $category){
@@ -214,7 +214,7 @@
 			) return $txt;
 
 			$words = $this->keywords['new']['final'];
-			$txt = preg_replace("#(".implode("|",$words).")#i", "<strong>$1</strong>", $txt);
+			$txt = preg_replace("#(".implode("|",$words).")#i", "<strong>$1</strong>", htmlentities($txt));
 			return $txt;
 		}
 	}
