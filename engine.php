@@ -15,14 +15,13 @@
 			if(isset($_GET['search']) && strlen(trim($_GET['search']))>1){
 				$this->isSearch = true;
 				$_GET['search'] = str_replace("’","'",$_GET['search']);
-				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\-\' ]/',' ',$_GET['search'])));
+				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\-\'\" ]/',' ',$_GET['search'])));
 				$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
 				$this->build_keywords();
 			}
 
 			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
 			$this->build_sql();
-			//print_r($this->sql);
 			$this->preparing_result();
 			$this->error = array_filter($this->error);
 		}
@@ -31,8 +30,14 @@
 		function build_keywords(){
 			$fullSentence = strtolower($this->keywords['original']['clean']);
 
+			//fullsetence without punctuation
 			$this->keywords['original']['full'] = $fullSentence;
-			$this->keywords['original']['words'] = explode(' ',$fullSentence);
+			
+			//support quoted words
+			$this->keywords['original']['words'] = array_map(
+				function($str){return trim(str_replace("\"", "", $str));},
+				preg_split('/("[^"]*")|\h+/', strtolower($this->keywords['original']['placeholder']), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE)
+			);
 
 			//new word from striped word contain non-alpha 
 			$newAlpha = array();
@@ -135,7 +140,24 @@
 
 			for($i=0;$i<$dataCount;$i++){
 				$oldData[$i]['corrected'] = false;
+				
+				$oldData[$i]['effected'] = array();
+				
 				$oldData[$i]['rankBefore'] = $oldData[$i]['rank'];
+
+				//checking first word from both header and additional are the same
+				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
+				if($indexed[0] == strtolower(substr(trim($oldData[$i]['additional']),0,strlen($indexed[0])))){
+					$newAdditional = explode('.',$oldData[$i]['additional']);
+					$oldData[$i]['additionalFirstWord'] = $newAdditional[0];
+					if($oldData[$i]['rank'] > 41){
+						//have single keyword
+						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 40;
+					}
+					array_shift($newAdditional);
+					$oldData[$i]['additional'] = preg_replace('/^[^a-z]+/i', '',implode('.',$newAdditional));
+				}
+
 
 				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
 				$oldData[$i]['indexed'] = $indexed;
@@ -144,11 +166,17 @@
 				$words = array_count_values($indexed);
 				
 				foreach($words as $word => $count){
-					if(in_array($word,$this->keywords['new']['final']) && $count > 1 && $oldData[$i]['rank'] > 4){
-						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 4;
-						$oldData[$i]['corrected'] = true;
-					}
+					
 					$oldData[$i]['diff'][$word] = $count;
+
+					if(in_array($word,$this->keywords['new']['final']) && $count > 1 && $oldData[$i]['rank'] > 5){
+						$netralized = ($count-1)*5;
+						
+						$oldData[$i]['rank'] = $oldData[$i]['rank'] - $netralized;
+						
+						$oldData[$i]['corrected'] = true;
+						$oldData[$i]['effected'][$word] = $netralized;
+					}
 					if($count==1 && in_array($word,$this->keywords['new']['final'])){
 						$oldData[$i]['found'][] = $word;
 					}
@@ -156,12 +184,6 @@
 
 				if(isset($oldData[$i]['found']) && count(array_diff($this->keywords['new']['final'],$oldData[$i]['found']))<1){
 					$oldData[$i]['rank'] = $oldData[$i]['rank'] + 100;
-				}
-
-				if($indexed[0] == strtolower(substr(trim($oldData[$i]['additional']),0,strlen($indexed[0])))){
-					$newAdditional = explode('.',$oldData[$i]['additional']);
-					array_shift($newAdditional);
-					$oldData[$i]['additional'] = preg_replace('/^[^a-z]+/i', '',implode('.',$newAdditional));
 				}
 
 				$newData[] = $oldData[$i];
@@ -259,8 +281,8 @@
 						}
 						
 						if(!in_array($full,$_SESSION['dictionary']['low'])){
-							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$full."')>0,'45',0) as signed) ";
-							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$full.$gap."')>0,'40',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$full."')>0,'115',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$full.$gap."')>0,'100',0) as signed) ";
 						}
 
 						foreach($this->keywords['new']['final'] as $word){
