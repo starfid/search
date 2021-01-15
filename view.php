@@ -39,7 +39,7 @@
 			
 			$this->placeholder = isset($this->keywords['original'])?$this->keywords['original']['placeholder']:"";
 			
-			$this->siteTitle = !empty($this->placeholder)?ucwords($this->placeholder)." - ":"";
+			$this->siteTitle = !empty($this->placeholder)?htmlentities($this->placeholder)." - ":"";
 			$this->siteTitle = $this->siteTitle.$this->pref['site']['name'];
 
 			$format = isset($_GET['format'])?$_GET['format']:NULL;
@@ -84,7 +84,7 @@
 			
 			$s .= "\n\t\t\t\t<div id=\"searchBox\">";
 			$s .= "\n\t\t\t\t\t<form method=\"get\" action=\"?\" onsumit=\"return submitting()\">";
-			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".$this->placeholder."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
+			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".htmlentities($this->placeholder)."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
 			$s .= "\n\t\t\t\t\t\t<input type=\"hidden\" id=\"cat\" name=\"cat\" value=\"".$this->selectedCat."\" />";
 			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" />";
 			$s .= "\n\t\t\t\t\t</form>";
@@ -105,14 +105,15 @@
 			$s .= "\n\t\t\t</ul>";
 			$s .= "\n\t\t</div>";
 			
-
-			$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
+			if(!$this->emptyKeyword){
+				$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
+			}
 			$s .= "\n\t\t<div id=\"toolbar\" class=\"center\">";
 			if(count($this->years)>1){
-				$s .= "\n\t\t\t<select id=\"year\"><option value=\"\">All Year</option><option>".implode("</option>\n<option>",$this->years)."</option></select>";
+				$s .= "\n\t\t\t<select id=\"year\">\n\t\t\t\t<option value=\"\">All Year</option>\n\t\t\t\t<option>".implode("</option>\n\t\t\t\t<option>",$this->years)."</option>\n\t\t\t</select>";
 			}
 			if(count($this->langs)>1){
-				$s .= "\n\t\t\t<select id=\"lang\"><option value=\"\">All Language</option><option>".implode("</option>\n<option>",$this->langs)."</option></select>";
+				$s .= "\n\t\t\t<select id=\"lang\">\n\t\t\t\t<option value=\"\">All Language</option>\n\t\t\t\t<option>".implode("</option>\n\t\t\t\t<option>",$this->langs)."</option>\n\t\t\t</select>";
 			}
 			$s .= "\n\t\t</div>";
 
