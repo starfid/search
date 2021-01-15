@@ -154,6 +154,8 @@
 
 				//checking first word from both header and additional are the same
 				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
+				$indexed = explode(' ',$indexed);
+
 				if($indexed[0] == strtolower(substr(trim($oldData[$i]['additional']),0,strlen($indexed[0])))){
 					$newAdditional = explode('.',$oldData[$i]['additional']);
 					$oldData[$i]['additionalFirstWord'] = $newAdditional[0];
@@ -162,6 +164,7 @@
 						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 40;
 					}
 					array_shift($newAdditional);
+					//$oldData[$i]['index0'] = $indexed;
 					$oldData[$i]['additional'] = preg_replace('/^[^a-z]+/i', '',implode('.',$newAdditional));
 				}
 
