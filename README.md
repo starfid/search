@@ -9,7 +9,8 @@
 - Supervised ML dictionaries.
 - Dark mode support.
 - Multiple view format (HTML & RSS)
-
+- Year and language filters
+- Support quoted words
 
 ## API Sample
 ```
