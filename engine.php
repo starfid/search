@@ -1,6 +1,6 @@
 <?php
 	class Search extends Database {
-		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch;
+		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch, $isStrict;
 		private $settings;
 
 		function __construct($settings){
@@ -15,8 +15,15 @@
 			if(isset($_GET['search']) && strlen(trim($_GET['search']))>1){
 				$this->isSearch = true;
 				$_GET['search'] = str_replace("’","'",$_GET['search']);
+				
+				//space, alphanum, dash, single and double quote
 				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\-\'\" ]/',' ',$_GET['search'])));
+
+				//space and alphanum
 				$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
+
+				$this->isStrict = str_word_count($this->keywords['original']['clean']) == 1 || (substr($this->keywords['original']['placeholder'],0,1)=="\"" && substr($this->keywords['original']['placeholder'],-1) == "\"")?true:false;
+				
 				$this->build_keywords();
 			}
 
