@@ -1,11 +1,11 @@
 <?php
 	class Serp extends Tool{
 		public $content, $keywords;
-		private $data, $selectedCat, $years = array(), $langs = array(), $allCats, $siteTitle, $emptyResult, $debug, $placeholder, $error;
+		private $data, $selectedCat, $years = array(), $langs = array(), $allCats, $siteTitle, $emptyResult, $debug, $placeholder, $error, $isStrict;
 
 		function __construct($result, $preference){
 			$this->keywords = $result->keywords;
-			
+			$this->isStrict = $result->isStrict;
 
 
 			$this->allCats = array_keys($preference['categories']);
@@ -101,7 +101,9 @@
 				$borderBottom = $category==$this->selectedCat?" class=\"selCat\"":"";
 				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".$category."</li>";
 			}
-			$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"tools\">Tools</li>";
+			if($this->isStrict and (count($this->years)>1 || count($this->langs)>1)){
+				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"tools\">Tools</li>";
+			}
 			$s .= "\n\t\t\t</ul>";
 			$s .= "\n\t\t</div>";
 			
