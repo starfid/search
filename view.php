@@ -1,7 +1,7 @@
 <?php
 	class Serp extends Tool{
 		public $content, $keywords;
-		private $data, $selectedCat, $years = array(), $langs = array(), $allCats, $siteTitle, $emptyResult, $debug, $placeholder, $error, $isStrict;
+		private $data, $selectedCat, $years = array(), $langs = array(), $allCats, $siteTitle, $emptyResult, $developing, $placeholder, $error, $isStrict;
 
 		function __construct($result, $preference){
 			$this->keywords = $result->keywords;
@@ -13,7 +13,7 @@
 
 			$this->selectedCat = $result->selectedCat;
 			$this->pref = $preference;
-			$this->debug = $preference['debug'];
+			$this->developing = $preference['developing'];
 			
 			$this->benchmarkStarted = $result->benchmarkStarted;
 			$this->data = $result->data;
@@ -30,11 +30,12 @@
 				}));
 			}
 			if(!$this->emptyResult){
-				$this->years = array_unique($result->years);
-				sort($this->years);
-				
-				$this->langs = array_unique($result->langs);
+				sort($result->years);
+				$this->years = array_count_values($result->years);
+				//echo(implode('-',array_values($this->years)));
+
 				sort($this->langs);
+				$this->langs = array_count_values($result->langs);
 			}
 			
 			$this->placeholder = isset($this->keywords['original'])?$this->keywords['original']['placeholder']:"";
@@ -48,7 +49,7 @@
 		}
 
 		function html(){
-			$random = !$this->debug?:"?r=".rand();
+			$random = $this->developing?"?r=".rand():"";
 			$s = "<!DOCTYPE html>";
 			$s .= "\n<html lang='en'>";
 			$s .= "\n\t<head>";
@@ -110,15 +111,17 @@
 			if(!$this->emptyKeyword){
 				$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
 			}
-			$s .= "\n\t\t<div id=\"toolbar\" class=\"center\">";
-			if(count($this->years)>1){
-				$s .= "\n\t\t\t<select id=\"year\">\n\t\t\t\t<option value=\"\">All Year</option>\n\t\t\t\t<option>".implode("</option>\n\t\t\t\t<option>",$this->years)."</option>\n\t\t\t</select>";
-			}
-			if(count($this->langs)>1){
-				$s .= "\n\t\t\t<select id=\"lang\">\n\t\t\t\t<option value=\"\">All Language</option>\n\t\t\t\t<option>".implode("</option>\n\t\t\t\t<option>",$this->langs)."</option>\n\t\t\t</select>";
-			}
-			$s .= "\n\t\t</div>";
 
+			if($this->isStrict){
+				$s .= "\n\t\t<div id=\"toolbar\" class=\"center\">";
+				if(count($this->years)>1){
+					$s .= "\n\t\t\t<select id=\"year\">\n\t\t\t\t<option value=\"\">All Year</option>\n\t\t\t\t<option>".implode("</option>\n\t\t\t\t<option>",array_keys($this->years))."</option>\n\t\t\t</select>";
+				}
+				if(count($this->langs)>1){
+					$s .= "\n\t\t\t<select id=\"lang\">\n\t\t\t\t<option value=\"\">All Language</option>\n\t\t\t\t<option>".implode("</option>\n\t\t\t\t<option>",array_keys($this->langs))."</option>\n\t\t\t</select>";
+				}
+				$s .= "\n\t\t</div>";
+			}
 			
 			$s .= "\n\t\t<div id=\"main\" class=\"float center\">";
 
@@ -158,7 +161,7 @@
 				for($i=0;$i<count($this->data);$i++){
 					$data = $this->data[$i];
 					
-					$title = !$this->emptyKeyword && $this->debug && isset($data['rank'])?" title=\"No ".($i+1)." - Rank ".$data['rank']." - Wordcount ".$data['wordcount']."\"":"";
+					$title = !$this->emptyKeyword && $this->developing && isset($data['rank'])?" title=\"No ".($i+1)." - Rank ".$data['rank']." - Wordcount ".$data['wordcount']."\"":"";
 					$category = " data-cat=\"".$data['category']."\"";
 					$lang = " data-lang=\"".$data['lang']."\"";
 					$pubyear = " data-year=\"".$data['pubyear']."\"";
