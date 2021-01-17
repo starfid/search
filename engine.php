@@ -14,7 +14,7 @@
 
 			if(isset($_GET['search']) && strlen(trim($_GET['search']))>1){
 				$this->isSearch = true;
-				$_GET['search'] = str_replace("’","'",$_GET['search']);
+				$_GET['search'] = iconv('UTF-8', 'ASCII//TRANSLIT', $_GET['search']);
 				
 				//space, alphanum, dash, single and double quote
 				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\-\'\" ]/',' ',$_GET['search'])));
