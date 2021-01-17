@@ -197,13 +197,13 @@
 				$s .= "\n\t\t\t<pubdate>".date("D, d M Y H:i:s",strtotime($data['entry']))."</pubdate>";
 				$s .= "\n\t\t\t<title>".stripslashes(stripslashes($data['header']))."</title>";
 				$s .= "\n\t\t\t<guid>".ucfirst($data['category'])." > ".html_entity_decode(ucfirst($data['location']))."</guid>";
-				$s .= "\n\t\t\t<description>".stripslashes($data['additional'])."</description>";
+				$s .= "\n\t\t\t<description>".stripslashes(htmlentities($data['additional']))."</description>";
 				$s .= "\n\t\t</item>";
 			}
 			$s .= "\n\t</channel>";
 			$s .= "\n</rss>";
 			
-			$this->content = $s;
+			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 		}
 
 	}
