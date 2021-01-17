@@ -10,5 +10,5 @@
 
 	echo $display->content;
 
-	unset($_SESSION['dictionary']);
+	if($settings['preference']['developing']) unset($_SESSION['dictionary']);
 ?>
