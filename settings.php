@@ -99,7 +99,7 @@
 				'ebook' 		=> 'Online journal subscription',
 				'repository' 	=> 'Online collections'				
 			),
-			'debug'			=> true,
+			'developing'		=> true,
 			'minimizeHTML'		=> true,
 
 		)
