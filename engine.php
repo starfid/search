@@ -17,7 +17,7 @@
 				$_GET['search'] = iconv('UTF-8', 'ASCII//TRANSLIT', $_GET['search']);
 				
 				//space, alphanum, dash, single and double quote
-				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\-\'\" ]/',' ',$_GET['search'])));
+				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" ]/',' ',$_GET['search'])));
 
 				//space and alphanum
 				$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
@@ -264,17 +264,27 @@
 
 						$rank[] = "\n\tcast(if(trim(replace(".$column.",'.',' '))='".$full."','400',0) as signed) ";
 
+						//puzling words
 						$fullWordsCount = str_word_count($full);
 						if($fullWordsCount > 1){
 							$rank[] = "\n\tcast(if(instr(replace(".$column.",'.',' '),'".$full."')>0,'32',0) as signed) ";
 							if($fullWordsCount > 2 && $fullWordsCount < 5){
 								$word1and2 = explode(' ',$full);
 								$word1and2 = $word1and2[0]." ".$word1and2[1];
+								
 								$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'3',0) as signed) ";
+
+								//full 2 words
+								$rank[] = "\n\tcast(if(trim(replace(".$column.",'.',' '))='".$word1and2."','240',0) as signed) ";
+								
 								
 								if($fullWordsCount==4){
+
+									//full 3 words
+									$word1and2and3 = $word1and2[0]." ".$word1and2[1]." ".$word1and2[3];
+									$rank[] = "\n\tcast(if(trim(replace(".$column.",'.',' '))='".$word1and2and3."','290',0) as signed) ";
+
 									$word1and2 = array_slice(explode(' ',$full),-2);
-									$word1and2 = $word1and2[0]." ".$word1and2[1];
 									$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'2',0) as signed) ";
 									$rank[] = "\n\tcast(if(instr(".$column.",'".$word1and2."')>0,'5',0) as signed) ";
 								}
@@ -285,14 +295,14 @@
 						//add bigger point for shorter sentence
 						if($fullWordsCount < 4){
 							$stripCol = "replace(replace(".$column.",':',' '),'  ',' ')";
-							for($i=1;$i<4;$i++){
+							for($i=1;$i<5;$i++){
 								$rank[] = "\n\tcast(if((length(".$column.") - length(replace(".$column.", ' ', '')) + 1) = ".$i.",'".(14-$i)."',0) as signed) ";
 							}
 						}
 						
 						if(!in_array($full,$_SESSION['dictionary']['low'])){
 							$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$full."')>0,'115',0) as signed) ";
-							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$full.$gap."')>0,'100',0) as signed) ";
+							$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$full.$gap."')>0,'115',0) as signed) ";
 						}
 
 						foreach($this->keywords['new']['final'] as $word){
