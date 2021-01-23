@@ -95,6 +95,9 @@ window.onload = function(){
 		if($('#toolbar > select').length<1) return false;
 		$('#toolbar').toggle('display','block','none');
 		$('#benchmark').toggle('display','none','block');
+		if($('#year').length==1 && screen.width > 768){
+			$('figure').toggle('display','block','none');
+		}
 	});
 	$('form').on('submit',function(e){
 		submitting();
@@ -109,6 +112,17 @@ window.onload = function(){
 		($('#campaign').length == 1) && $('#campaign').remove() && $('#catswrap').css('display','block');
 	});
 	$('html,body,#wrapper').css('height','100%');
+	if($('text').length>0){
+		$('text').on('mouseover',function(){
+			linemov(this.innerHTML);
+		});
+		$('text').on('mouseout',function(){
+			linemot();
+		});
+		$('text').on('click',function(){
+			lineclick(this.innerHTML);
+		});
+	}
 };
 
 var originKeyword, gap = [70,30,10], fromCat = !!0;
@@ -147,6 +161,7 @@ setSideBar = function(el){
 	$('#language').text(strip(el.parentNode.dataset.lang));
 	if(screen.width < 767){
 		document.addEventListener('touchmove', preventTouch, { passive: false });
+		$('body').css('overflow','hidden');
 		var scrollY = window.scrollY, topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35))
 		$('body').append({
 			'element':'div',
@@ -196,6 +211,7 @@ closeSideBar = function(){
 			$('#popBase').remove();
 			gap.reverse();
 			document.removeEventListener('touchmove', preventTouch, false);
+			$('body').css('overflow','auto');
 		}
 	);
 },
@@ -209,4 +225,27 @@ toolbar = function(el){
 	if($('#'+  (id=='year'?'lang':'year') +' option').length>0){
 		$('#'+  (id=='year'?'lang':'year') +' option')[0].selected = true;
 	}
+},
+linemov = function(txt){
+	if($('#hover').length>0) return false;
+	$('figure').append({
+		'element':'div',
+		'text':txt,
+		'id':'hover',
+		'css':{
+			'left':(window.event.clientX+7)+'px',
+			'top':(window.event.clientY-10)+'px'
+		}
+	});
+},
+linemot = function(){
+	$('#hover').remove();
+},
+lineclick = function(txt){
+	$('#lang option')[0].selected = true;
+	$('#results dl').each(function(el){
+		$(el).css('display',
+			($(el).attr('data-year') == txt) || el.value == '' ?'block':'none'
+		);
+	});
 }
