@@ -49,6 +49,7 @@
 		}
 
 		function html(){
+			//print_r($this->years);
 			$random = $this->developing?"?r=".rand():"";
 			$s = "<!DOCTYPE html>";
 			$s .= "\n<html lang='en'>";
@@ -142,6 +143,12 @@
 
 			$s .= "\n\t\t\t<div class=\"left\" id=\"results\">";
 
+			if($this->isStrict && count($this->years)>1){
+				$s .= "\n\t\t\t\t<figure>";
+				$s .= $this->chart($this->years);
+				$s .= "\n\t\t\t\t</figure>";
+			}
+
 			if(count($this->error)>0){
 				$s .= "\n\t\t\t\t<dl>\n\t\t\t\t\t<dt class=\"error\">Check your SQL</dt>";
 				$s .= "\n\t\t\t\t\t<dd>";
@@ -208,7 +215,6 @@
 			
 			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 		}
-
 	}
 
 	class Tool {
@@ -222,6 +228,34 @@
 			$words = $this->keywords['new']['final'];
 			$txt = preg_replace("#(".implode("|",$words).")#i", "<strong>$1</strong>", htmlentities($txt));
 			return $txt;
+		}
+		function chart($years){
+			$max = max($years);
+			$gap = floor(590/count($years));
+
+			$x = 0;
+			$points = array();
+			$text = array();
+
+			foreach($years as $year => $y){
+				$y = 100-(ceil(($y*98)/$max));
+				$points[] = $x.",".$y;
+				$text[] = array(
+					"x" => $x,
+					"y" => $y,
+					"text" => $year
+				);
+				$x = $x + $gap;
+			}
+			$s = "";
+			$s .= "\n\t\t\t\t\t<svg width=\"100%\" height=\"100\">";
+			$s .= "\n\t\t\t\t\t\t<polyline points=\"".implode(" ",$points)."\" />";
+			foreach($text as $dat){
+				$s .= "\n\t\t\t\t\t\t<text x=\"".($dat['x']-4)."\" y=\"".$dat['y']."\">".$dat['text']."</text>";
+			}
+			$s .= "\n\t\t\t\t\t</svg>";
+			$s = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
+			return $s;
 		}
 	}
 
