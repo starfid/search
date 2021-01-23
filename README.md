@@ -8,9 +8,10 @@
 - Multiple tables search.
 - Supervised ML dictionaries.
 - Dark mode support.
-- Multiple view format (HTML & RSS)
-- Year and language filters
-- Support quoted words
+- Multiple view format (HTML & RSS).
+- Year and language filters.
+- Support quoted words.
+- Timeline chart in desktop mode.
 
 ## API Sample
 ```
