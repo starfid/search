@@ -103,7 +103,7 @@ window.onload = function(){
 		submitting();
 	});
 	$('dl').on('click',function(){
-		this.className != 'warning' && setSideBar(this.getElementsByTagName('dt')[0]);
+		this.className != 'warning' && setSideBar(this); //setSideBar(this.getElementsByTagName('dt')[0]);
 	});
 	$('#year,#lang').on('change',function(){
 		toolbar(this);
@@ -153,12 +153,12 @@ strip = function(txt){
 	return txt.replace(/(<([^>]+)>)/gi, "");
 },
 setSideBar = function(el){
-	$('#header').text(strip(el.innerHTML));
-	$('#additional').text(strip(el.parentNode.getElementsByClassName('info')[0].innerHTML));
-	$('#location').text(strip(el.parentNode.getElementsByClassName('itemLoc')[0].innerHTML));
-	$('#category').text(strip(el.parentNode.dataset.cat));
-	$('#pubyear').text(strip(el.parentNode.dataset.year));
-	$('#language').text(strip(el.parentNode.dataset.lang));
+	$('#header').text(strip($('dt',el).text()));
+	$('#additional').text(strip($('.info',el).text()));
+	$('#location').text(strip($('.itemLoc',el).text()));
+	$('#category').text(strip($(el).attr('data-cat')));
+	$('#pubyear').text(strip($(el).attr('data-year')));
+	$('#language').text(strip($(el).attr('data-lang')));
 	if(screen.width < 767){
 		document.addEventListener('touchmove', preventTouch, { passive: false });
 		$('body').css('overflow','hidden');
@@ -216,11 +216,15 @@ closeSideBar = function(){
 	);
 },
 toolbar = function(el){
-	var id = el.id, val = el.value.toLowerCase();
+	var id = el.id, val = el.value.toLowerCase(), first = true;
 	$('#results dl').each(function(el){
 		$(el).css('display',
 			($(el).attr('data-'+id) == val) || val == '' ?'block':'none'
 		);
+		if(first && $(el).css('display')=='block'){
+			setSideBar(el);
+			first = false;
+		}
 	});
 	if($('#'+  (id=='year'?'lang':'year') +' option').length>0){
 		$('#'+  (id=='year'?'lang':'year') +' option')[0].selected = true;
