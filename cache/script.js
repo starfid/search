@@ -114,13 +114,13 @@ window.onload = function(){
 	$('html,body,#wrapper').css('height','100%');
 	if($('text').length>0){
 		$('text').on('mouseover',function(){
-			linemov(this.innerHTML);
+			linemov(this);
 		});
 		$('text').on('mouseout',function(){
 			linemot();
 		});
 		$('text').on('click',function(){
-			lineclick(this.innerHTML);
+			lineclick(this);
 		});
 	}
 };
@@ -230,8 +230,9 @@ toolbar = function(el){
 		$('#'+  (id=='year'?'lang':'year') +' option')[0].selected = true;
 	}
 },
-linemov = function(txt){
+linemov = function(el){
 	if($('#hover').length>0) return false;
+	txt = el.textContent;
 	$('figure').append({
 		'element':'div',
 		'text':txt,
@@ -245,11 +246,16 @@ linemov = function(txt){
 linemot = function(){
 	$('#hover').remove();
 },
-lineclick = function(txt){
-	$('#lang option')[0].selected = true;
+lineclick = function(el){
+	if($('#lang option') > 0) $('#lang option')[0].selected = true;
+	var txt = el.textContent, first = true;
 	$('#results dl').each(function(el){
 		$(el).css('display',
 			($(el).attr('data-year') == txt) || el.value == '' ?'block':'none'
 		);
+		if(first && $(el).css('display')=='block'){
+			setSideBar(el);
+			first = false;
+		}
 	});
 }
