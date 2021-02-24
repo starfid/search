@@ -284,7 +284,7 @@
 									$word1and2and3 = $word1and2[0]." ".$word1and2[1]." ".$word1and2[3];
 									$rank[] = "\n\tcast(if(trim(replace(".$column.",'.',' '))='".$word1and2and3."','290',0) as signed) ";
 
-									$word1and2 = array_slice(explode(' ',$full),-2);
+									$word1and2 = implode(" ",array_slice(explode(' ',$full),-2));
 									$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'2',0) as signed) ";
 									$rank[] = "\n\tcast(if(instr(".$column.",'".$word1and2."')>0,'5',0) as signed) ";
 								}
