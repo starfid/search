@@ -118,7 +118,7 @@
 				$replacement = array(
 					'oe'	=> 'u',
 					'dj'	=> 'j',
-					'z'		=> 'z',
+					'dz'	=> 'z',
 					'sy'	=> 'sh'
 				);
 				if(preg_match("/".implode('|',array_keys($replacement))."/", $words)){
