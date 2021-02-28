@@ -115,8 +115,14 @@
 				}
 
 				//alternative spelling
-				if(preg_match('/oe|dj|dz|sy/', $words)){
-					$this->keywords['new']['alternative'][] = str_replace(array('oe','dj','dz','sy'),array('u','j','z','sh'),$words);
+				$replacement = array(
+					'oe'	=> 'u',
+					'dj'	=> 'j',
+					'z'		=> 'z',
+					'sy'	=> 'sh'
+				);
+				if(preg_match("/".implode('|',array_keys($replacement))."/", $words)){
+					$this->keywords['new']['alternative'][] = str_replace(array_keys($replacement),array_values($replacement),$words);
 				}
 				
 			}
