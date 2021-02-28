@@ -120,6 +120,11 @@
 				}
 				
 			}
+
+			//join two words as alternative
+			if($wordCount==2) {
+				$this->keywords['new']['alternative'][] = implode('',$this->keywords['new']['without_noise']);
+			}
 			
 			$this->keywords['new']['merge'] = array_merge(
 				$this->keywords['new']['alternative'],
@@ -204,6 +209,7 @@
 			}
 			$this->data = $newData;
 		}
+
 		function permutation($items, $perms = array( ), &$return = array()) {
 			if (empty($items)) {
 				$return[] = array_values($perms);
@@ -219,8 +225,6 @@
 				return $return;
 			}
 		}
-
-
 
 		function build_sql(){
 			foreach($this->settings['tables'] as $param){
@@ -272,10 +276,12 @@
 						$fullWordsCount = str_word_count($full);
 						if($fullWordsCount > 1){
 							$rank[] = "\n\tcast(if(instr(replace(".$column.",'.',' '),'".$full."')>0,'32',0) as signed) ";
+							
+							$word1and2 = explode(' ',$full);
+							$word1and2 = $word1and2[0]." ".$word1and2[1];
+
 							if($fullWordsCount > 2 && $fullWordsCount < 5){
-								$word1and2 = explode(' ',$full);
-								$word1and2 = $word1and2[0]." ".$word1and2[1];
-								
+
 								$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'3',0) as signed) ";
 
 								//full 2 words
@@ -293,6 +299,15 @@
 									$rank[] = "\n\tcast(if(instr(".$column.",'".$word1and2."')>0,'5',0) as signed) ";
 								}
 								
+							}
+						}
+						
+						if($fullWordsCount == 2){
+							$word1and2 = str_replace(' ','',$word1and2);
+							$rank[] = "\n\tcast(if(instr(replace(".$column.",'.',' '),'".$word1and2."')>0,'32',0) as signed) ";
+							if($fullWordsCount == 2){
+								$rank[] = "\n\tcast(if(instr(concat('".$gap."',".$column."),'".$gap.$word1and2."')>0,'115',0) as signed) ";
+								$rank[] = "\n\tcast(if(instr(concat(".$column.",'".$gap."'),'".$word1and2.$gap."')>0,'115',0) as signed) ";
 							}
 						}
 
