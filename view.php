@@ -7,7 +7,6 @@
 			$this->keywords = $result->keywords;
 			$this->isStrict = $result->isStrict;
 
-
 			$this->allCats = array_keys($preference['categories']);
 			array_unshift($this->allCats,"all");
 
@@ -30,12 +29,14 @@
 				}));
 			}
 			if(!$this->emptyResult){
-				sort($result->years);
-				$this->years = array_count_values($result->years);
-				//echo(implode('-',array_values($this->years)));
-
-				sort($this->langs);
-				$this->langs = array_count_values($result->langs);
+				if(is_array($result->years)){
+					sort($result->years);
+					$this->years = array_count_values($result->years);
+				}
+				if(is_array($this->langs)){
+					sort($this->langs);
+					$this->langs = array_count_values($result->langs);
+				}
 			}
 			
 			$this->placeholder = isset($this->keywords['original'])?$this->keywords['original']['placeholder']:"";
@@ -49,7 +50,6 @@
 		}
 
 		function html(){
-			//print_r($this->years);
 			$random = $this->developing?"?r=".rand():"";
 			$s = "<!DOCTYPE html>";
 			$s .= "\n<html lang='en'>";
@@ -185,6 +185,7 @@
 
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
+			$s .= "<!--";
 
 			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 
