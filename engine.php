@@ -54,6 +54,10 @@
 					$newAlpha[] =  $onlyAlpha;
 				}
 			}
+
+			//restrict words to 6
+			$this->keywords['original']['words'] = array_slice($this->keywords['original']['words'],0,6);
+			
 			if(count($newAlpha)>0){
 				$this->keywords['original']['words'] = array_merge($this->keywords['original']['words'],$newAlpha);
 			}
