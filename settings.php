@@ -18,7 +18,7 @@
 			array(
 				"name" 			=> "buku",
 				"index"			=> array("judul","penulis1","editor"),
-				"category"		=> "case when gol_pustaka = 'BK' then 'buku' when gol_pustaka = 'SK' then 'skripsi' when gol_pustaka = 'LP' then 'laporan' when gol_pustaka = 'AV' then 'multimedia' end",
+				"category"		=> "case when gol_pustaka = 'BK' then 'buku' when gol_pustaka = 'SK' then 'skripsi' when gol_pustaka = 'JU' then 'jurnal' when gol_pustaka = 'LP' then 'laporan' when gol_pustaka = 'AV' then 'multimedia' end",
 				"header"		=> "judul",
 				"location"		=> "if(gol_pustaka = 'SK',concat('Rak ',penerbit,' &gt; ',kelas),concat('Rak ',kelas))",
 				"additional"		=> "concat(penulis1,'. ',if(gol_pustaka = 'SK',concat('Bimbingan ',editor),penerbit),'. ',th_terbit,'. ', kota,'..')",
@@ -84,20 +84,21 @@
 			'site'			=> array(
 				'name'			=> 'Search Engine',
 				'desc'			=> 'Indexing multiple tables and sort the result in relevance order start from the top list',
+				'address'		=> 'One Infinite Loop Cupertino, California 95014 (408) 606-5775',
 			),
 			'campaign'		=> array(
 				'title'			=> 'Protect Each Other',
 				'desc'			=> 'Love your family and friends, wear a face mask'
 			),
-			'categories'	=> array(
+			'categories'		=> array(
 				'people'		=> 'Student and employee',
 				'buku' 			=> 'Collections at level 3 and 4',
 				'skripsi' 		=> 'Collections at level 2',
-				'multimedia' 	=> 'Collection at level 2',
+				'multimedia' 		=> 'Collection at level 2',
 				'laporan' 		=> 'Collection at level 2',
 				'jurnal' 		=> 'Collection at level 2',
 				'ebook' 		=> 'Online journal subscription',
-				'repository' 	=> 'Online collections'				
+				'repository' 		=> 'Online collections'				
 			),
 			'developing'		=> true,
 			'minimizeHTML'		=> true,
