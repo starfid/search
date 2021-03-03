@@ -87,7 +87,8 @@
 			$s .= "\n\t\t<div>";
 			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float center\">";
 			
-			$s .= "\n\t\t\t\t<div id=\"searchBox\">";
+			$edge = $this->emptyKeyword?"pseudo":"search";
+			$s .= "\n\t\t\t\t<div id=\"".$edge."Box\">";
 			$s .= "\n\t\t\t\t\t<form method=\"get\" action=\"?\" onsumit=\"return submitting()\">";
 			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".htmlentities($this->placeholder)."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
 			$s .= "\n\t\t\t\t\t\t<input type=\"hidden\" id=\"cat\" name=\"cat\" value=\"".$this->selectedCat."\" />";
@@ -140,7 +141,7 @@
 				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".$selected['lang']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'>".$selected['location']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Address:</b> ".$this->siteAddress."</div>";
-				$s .= "\n\t\t\t\t\t<img src=\"cache/map.jpg\" width=\"100%\" />";
+				$s .= "\n\t\t\t\t\t<img src=\"cache/map.jpg\" width=\"100%\" />"; //map.jpg recommended less than 500px height or less than 30kb
 				$s .= "\n\t\t\t\t</div>";
 				$s .= "\n\t\t\t</div>";
 			}
