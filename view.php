@@ -7,6 +7,7 @@
 			$this->keywords = $result->keywords;
 			$this->isStrict = $result->isStrict;
 
+
 			$this->allCats = array_keys($preference['categories']);
 			array_unshift($this->allCats,"all");
 
@@ -43,6 +44,8 @@
 			
 			$this->siteTitle = !empty($this->placeholder)?htmlentities($this->placeholder)." - ":"";
 			$this->siteTitle = $this->siteTitle.$this->pref['site']['name'];
+			$this->siteAddress = $this->pref['site']['address'];
+			
 
 			$format = isset($_GET['format'])?$_GET['format']:NULL;
 			method_exists($this,$format)?$this->$format():$this->html();
@@ -133,9 +136,11 @@
 				$s .= "\n\t\t\t\t\t<h1 id='header'>".$selected['header']."</h1>";
 				$s .= "\n\t\t\t\t\t<div id='additional'>".$selected['additional']."</div>";
 				$s .= "\n\t\t\t\t\t<div><b>Category:</b> <span id='category'>".$selected['category']."</span></div>";
-				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'>".$selected['location']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Published Year:</b> <span id='pubyear'>".$selected['pubyear']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".$selected['lang']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'>".$selected['location']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Address:</b> ".$this->siteAddress."</div>";
+				$s .= "\n\t\t\t\t\t<img src=\"cache/map.jpg\" width=\"100%\" />";
 				$s .= "\n\t\t\t\t</div>";
 				$s .= "\n\t\t\t</div>";
 			}
@@ -186,6 +191,7 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 			$s .= "<!--";
+			$s .= "<script></script>";
 
 			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 
@@ -229,6 +235,11 @@
 			$words = $this->keywords['new']['final'];
 			$txt = preg_replace("#(".implode("|",$words).")#i", "<strong>$1</strong>", htmlentities($txt));
 			return $txt;
+		}
+		function diagnostic($url){
+			$s = "<script>";
+			$s = "</script>";
+			
 		}
 		function chart($years){
 			$max = max($years);
