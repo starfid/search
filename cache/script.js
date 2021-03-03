@@ -109,7 +109,11 @@ window.onload = function(){
 		toolbar(this);
 	});
 	($('#campaign').length == 1) && $('#search').on('keydown',function(){
-		($('#campaign').length == 1) && $('#campaign').remove() && $('#catswrap').css('display','block');
+		if($('#campaign').length == 1){
+			$('#campaign').remove();
+			$('#catswrap').css('display','block');
+			$('#pseudoBox').attr('id','searchBox');
+		}
 	});
 	$('html,body,#wrapper').css('height','100%');
 	if($('text').length>0){
