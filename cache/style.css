@@ -28,12 +28,12 @@ ul li {list-style:none}
 
 #campaign h1 {font-size:40px;font-weight:bolder;padding:200px 0px 0px 0px;}
 #campaign h2 {font-size:20px;margin-bottom:90px;padding:10px 0px}
-#edge {background-color:white;border-top-left-radius:8px;border-top-right-radius:8px}
+#edge {background-color:white;border-top-left-radius:16px;border-top-right-radius:16px}
 #pseudoBox, #searchBox {overflow:auto; max-width:590px;border:solid 1px rgba(0, 0, 0, 0.15); border-radius:10px; box-shadow:rgba(0, 0, 0, 0.06) 0px 2px 3px 0px;}
 
 .grey-bg {background-color:#FAFAFA;}
 #pseudoBox, #searchBox,#search {background-color:#FAFAF9;}
-#pseudoBox {margin:0px 0 0px 0;}
+#pseudoBox {margin:0px;}
 #searchBox {margin:11px 0 11px 0;}
 #search{ border:0px; width:93%; padding:10px 15px; font-size:16px; }
 
@@ -95,7 +95,7 @@ dd {font-size:14px;}
 	#campaign h1 {padding:210px 15px 0px 15px;font-size:30px;}
 	#campaign h2 {padding:10px 15px 0 15px;font-size:20px;}
 	#pseudoBox, #searchBox {max-width:94%;}
-	#pseudoBox {margin: 0px auto 0px auto;}
+	#pseudoBox {margin: 0px auto;}
 	#searchBox {margin: 10px auto 10px auto;}
 	#search, #benchmark {width:86%;}
 	#toolbar {padding-left:0; width:94%}
