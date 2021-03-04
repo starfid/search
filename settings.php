@@ -29,11 +29,11 @@
 			),
 			array(
 				"name" 			=> "jurnal_artikel",
-				"index"			=> array("judul","penulis","artikel","nama_jurnal"),
+				"index"			=> array("judul","penulis","nama_jurnal"),
 				"category"		=> "'jurnal'",
 				"header"		=> "judul",
 				"location"		=> "concat(nama_jurnal,' &gt; Vol ',volume,' &gt; Nomor ',nomor,' &gt; Tahun ',tahun)",
-				"additional"		=> "concat(penulis,'. ',artikel)",
+				"additional"		=> "concat(penulis,'. ',substr(artikel,1,80))",
 				"entry"			=> "date(tgl_input)",
 				"pubyear"		=> "tahun",
 				"lang"			=> "'indonesia'",
