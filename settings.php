@@ -33,7 +33,7 @@
 				"category"		=> "'jurnal'",
 				"header"		=> "judul",
 				"location"		=> "concat(nama_jurnal,' &gt; Vol ',volume,' &gt; Nomor ',nomor,' &gt; Tahun ',tahun)",
-				"additional"		=> "concat(penulis,'. ',substr(artikel,1,80))",
+				"additional"		=> "concat(penulis,'. ',artikel)",
 				"entry"			=> "date(tgl_input)",
 				"pubyear"		=> "tahun",
 				"lang"			=> "'indonesia'",
