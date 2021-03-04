@@ -76,7 +76,7 @@ svg polyline {fill:none;stroke:#00278E;stroke-width:3}
 svg text {fill:transparent;cursor:pointer;width:60px;height:40px;font-size:14px;}
 #hover {background-color:white;border:solid 1px grey;font-size:12px;color:black;position:absolute;z-index:1;padding:3px}
 
-#sideBar {width:300px;margin: 25px 0 0 0;}
+#sideBar {width:300px;margin:0;}
 #sideBar h1 {font-size:24px}
 .segment div {margin:10px 0}
 #category {text-transform:capitalize}
@@ -111,11 +111,16 @@ dd {font-size:14px;}
 	#toolbar select {padding: 5px 10px}
 	dl, #toolbar select {border:solid 1px rgba(0, 0, 0, 0.15); border-radius:10px; box-shadow:rgba(0, 0, 0, 0.06) 0px 2px 3px 0px;}
 	.loc {margin:3px 0}
+	.info, #additional {height:50px;text-overflow: ellipsis;overflow:hidden;}
 	.warning {background-color:transparent;border:none;border-radius:0;box-shadow:none}
 }
 @media (max-width: 420px) {
 	#campaign{background-size:auto 100%;}
 	#campaign h1 {padding:190px 15px 0px 15px;font-size:30px;}
+	.info, #additional {height:49px;}
+}
+@supports (-webkit-touch-callout: none) and (max-width: 420px) {
+	.info, #additional {height:40px;}
 }
 @media (prefers-color-scheme: dark) {
 	.grey-bg {background-color:#272727;}
