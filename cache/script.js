@@ -129,7 +129,7 @@ window.onload = function(){
 	}
 };
 
-var originKeyword, gap = [100,60,30,10], fromCat = !!0;
+var originKeyword, gap = [100,60,30,10], fromCat = !!0, swipeStart, firstSwipe = !!0, swipedUp = !!0;
 submitting = function(){
 	window.event.preventDefault();
 	!fromCat && $('#cat').val('all');
@@ -185,13 +185,27 @@ setSideBar = function(el){
 			'height'	:'100%',
 			'top'		: (topPop+150)+'px'
 		});
-		
 		$.timer(gap.length,35,
 			function(i){
 				$('#sideBar').css('top',(topPop+gap[i])+'px');
 			},
 			function(){
 				$('#sideBar').css('top',topPop+'px');
+				$('#sideBar').on('touchstart',function(evt){
+					swipeStart = evt.touches[0].clientY;
+				});
+				$('#sideBar').on('touchmove',function(evt){
+					if(firstSwipe==!!0){
+						var swipeEnd = evt.touches[0].clientY;
+						if(swipeEnd > swipeStart){
+							closeSideBar();
+						}
+						else if(swipeEnd < swipeStart){
+							swipingUp();
+						}
+						firstSwipe = !0;
+					}
+				});
 				$('#popBase').on('click',function(){
 					closeSideBar();
 				});
@@ -202,10 +216,23 @@ setSideBar = function(el){
 },
 preventTouch = function(e) {
     e.preventDefault();
+},
+swipingUp = function(){
+	if($('#popBase').length < 1) return !!0;
+	var topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.05))
+	$.timer(gap.length,30,
+		function(i){
+			$('#sideBar').css('top',(topPop+gap[i])+'px');
+		},
+		function(){
+			swipedUp = !0;
+			firstSwipe = !!0;
+		}
+	);
 }
 closeSideBar = function(){
-	if($('#popBase').length < 1) return false;
-	var topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35))
+	if($('#popBase').length < 1) return !!0;
+	var topScroll = parseInt(window.pageYOffset), pos = swipedUp?0.05:0.35, topPop = parseInt(topScroll+(parseInt(window.innerHeight)*pos))
 	gap.reverse();
 	$.timer(gap.length,30,
 		function(i){
@@ -217,6 +244,8 @@ closeSideBar = function(){
 			gap.reverse();
 			document.removeEventListener('touchmove', preventTouch, false);
 			$('body').css('overflow','auto');
+			firstSwipe = !!0;
+			swipedUp = !!0;
 		}
 	);
 },
