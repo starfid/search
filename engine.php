@@ -1,6 +1,6 @@
 <?php
 	class Search extends Database {
-		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch, $isStrict;
+		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch, $isStrict, $quoted;
 		private $settings;
 
 		function __construct($settings){
@@ -12,19 +12,27 @@
 				$this->build_dictionary();
 			}
 
-			if(isset($_GET['search']) && strlen(trim($_GET['search']))>1){
+			if(isset($_GET['search']) && strlen(trim($_GET['search']))>2){
 				$this->isSearch = true;
 				$_GET['search'] = iconv('UTF-8', 'ASCII//TRANSLIT', $_GET['search']);
 				
-				//space, alphanum, dash, single and double quote
-				$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" ]/',' ',$_GET['search'])));
+				if(strlen(preg_replace('/[^a-z]/i','', $_GET['search']))<3){
+					$this->isSearch = false;
+				}
+				else {
+					//space, alphanum, dash, single and double quote
+					$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" ]/',' ',$_GET['search'])));
 
-				//space and alphanum
-				$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
+					//collect only space and alphanum
+					$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
+					//strip start and end single quote
+					$this->keywords['original']['clean'] = preg_replace('~^[\']?(.*?)[\']?$~', '$1', $this->keywords['original']['clean']);
 
-				$this->isStrict = str_word_count($this->keywords['original']['clean']) == 1 || (substr($this->keywords['original']['placeholder'],0,1)=="\"" && substr($this->keywords['original']['placeholder'],-1) == "\"")?true:false;
-				
-				$this->build_keywords();
+					preg_match('/^"(.*?)"$/',$this->keywords['original']['placeholder'],$this->quoted);
+					$this->isStrict = count($this->quoted)>0?true:false;
+
+					$this->build_keywords();
+				}
 			}
 
 			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
@@ -37,30 +45,33 @@
 		function build_keywords(){
 			$fullSentence = strtolower($this->keywords['original']['clean']);
 
-			//fullsetence without punctuation
+			//fullsentence without punctuation
 			$this->keywords['original']['full'] = $fullSentence;
 			
-			//support quoted words
-			$this->keywords['original']['words'] = array_map(
-				function($str){return trim(str_replace("\"", "", $str));},
-				preg_split('/("[^"]*")|\h+/', strtolower($this->keywords['original']['placeholder']), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE)
-			);
-
-			//new word from striped word contain non-alpha 
-			$newAlpha = array();
-			foreach($this->keywords['original']['words'] as $word){
-				$onlyAlpha = preg_replace('/[^a-z]/i','', $word);
-				if($onlyAlpha != $word) {
-					$newAlpha[] =  $onlyAlpha;
-				}
+			if($this->isStrict){
+				$this->keywords['original']['words'] = array($this->quoted[1]);
 			}
+			else {
+				$this->keywords['original']['words'] = explode(" ",$fullSentence);
+
+				$cleanWord = ""; $newWord = array(); $newAlpha = array();
+				foreach($this->keywords['original']['words'] as $word){
+					$cleanWord = preg_replace('~^[\'"]?(.*?)[\'"]?$~', '$1', $word); //strip quote at start/end string
+					$newWord[] = $cleanWord;
+					$onlyAlpha = preg_replace('/[^a-z]/i','', $cleanWord); //new word from striped word contain non-alpha 
+					if($onlyAlpha != $cleanWord) {
+						$newAlpha[] =  $onlyAlpha;
+					}
+				}
+				$this->keywords['original']['words'] = $newWord;
+				if(count($newAlpha)>0){
+					$this->keywords['original']['words'] = array_merge($this->keywords['original']['words'],$newAlpha);
+				}
+	
+			}		
 
 			//restrict words to 6
 			$this->keywords['original']['words'] = array_slice($this->keywords['original']['words'],0,6);
-			
-			if(count($newAlpha)>0){
-				$this->keywords['original']['words'] = array_merge($this->keywords['original']['words'],$newAlpha);
-			}
 
 			$this->keywords['new']['without_noise'] = array_diff($this->keywords['original']['words'],$_SESSION['dictionary']['noise']);
 
@@ -69,7 +80,9 @@
 			if($wordCount == count($this->keywords['original']['words']) && $wordCount > 1 && $wordCount < 4){
 				$permut = $this->permutation($this->keywords['new']['without_noise']);
 				foreach($permut as $word){
-					if($word != $this->keywords['original']['words']) $this->keywords['new']['fullalternative'][] = implode(' ',$word);
+					if($word != $this->keywords['original']['words']) {
+						$this->keywords['new']['fullalternative'][] = implode(' ',$word);
+					}
 				}
 			}
 
@@ -216,7 +229,7 @@
 			$this->data = $newData;
 		}
 
-		function permutation($items, $perms = array( ), &$return = array()) {
+		function permutation($items, $perms = array(), &$return = array()) {
 			if (empty($items)) {
 				$return[] = array_values($perms);
 			}
@@ -250,7 +263,7 @@
 				$col[] = "\n\tlower(".$param['lang'].") as lang";
 				$col[] = "\n\t(length(".$param['index'][0].") - length(replace(".$param['index'][0].", ' ', '')) + 1) as wordcount";
 				
-				$having = $this->selectedCat != "all"?"having category = '".$this->selectedCat."'":"";
+				$having = $this->selectedCat != "all"?"having category = '".$this->selectedCat."'":"having category <> ''";
 				$orderBy = "";
 				$rank = "";
 				$where = "";
@@ -263,6 +276,7 @@
 					foreach($param['index'] as $column){
 						$column = "trim(lcase(replace(".$column.",'-',' ')))";
 						$full = addslashes($this->keywords['original']['full']);
+						$word1and2 = explode(' ',$full);
 						$where[] = "\n\t".$column." like '%".$full."%'";
 
 						if(array_key_exists("fullalternative",$this->keywords['new'])){
@@ -279,11 +293,11 @@
 						$rank[] = "\n\tcast(if(trim(replace(".$column.",'.',' '))='".$full."','400',0) as signed) ";
 
 						//puzling words
-						$fullWordsCount = str_word_count($full);
+						$fullWordsCount = count($word1and2);
 						if($fullWordsCount > 1){
 							$rank[] = "\n\tcast(if(instr(replace(".$column.",'.',' '),'".$full."')>0,'32',0) as signed) ";
 							
-							$word1and2 = explode(' ',$full);
+							
 							$word1and2 = $word1and2[0]." ".$word1and2[1];
 
 							if($fullWordsCount > 2 && $fullWordsCount < 5){
