@@ -1,7 +1,7 @@
 <?php
 	class Search extends Database {
-		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch, $isStrict, $quoted;
-		private $settings;
+		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch, $isStrict;
+		private $settings, $quoted, $wordCount;
 
 		function __construct($settings){
 			$this->benchmarkStarted = microtime(true);
@@ -27,9 +27,11 @@
 					$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
 					//strip start and end single quote
 					$this->keywords['original']['clean'] = preg_replace('~^[\']?(.*?)[\']?$~', '$1', $this->keywords['original']['clean']);
+					$this->wordCount = substr_count($this->keywords['original']['clean'],' ')+1;
 
 					preg_match('/^"(.*?)"$/',$this->keywords['original']['placeholder'],$this->quoted);
-					$this->isStrict = count($this->quoted)>0?true:false;
+					$this->isStrict = count($this->quoted)>0 || $this->wordCount ==1?true:false;
+
 
 					$this->build_keywords();
 				}
@@ -49,7 +51,7 @@
 			$this->keywords['original']['full'] = $fullSentence;
 			
 			if($this->isStrict){
-				$this->keywords['original']['words'] = array($this->quoted[1]);
+				$this->keywords['original']['words'] = isset($this->quoted[1])?array($this->quoted[1]):array($this->keywords['original']['full']);
 			}
 			else {
 				$this->keywords['original']['words'] = explode(" ",$fullSentence);
@@ -76,8 +78,8 @@
 			$this->keywords['new']['without_noise'] = array_diff($this->keywords['original']['words'],$_SESSION['dictionary']['noise']);
 
 			//full word alternative from permutation
-			$wordCount = count($this->keywords['new']['without_noise']);
-			if($wordCount == count($this->keywords['original']['words']) && $wordCount > 1 && $wordCount < 4){
+			$arrCount = count($this->keywords['new']['without_noise']);
+			if($arrCount == count($this->keywords['original']['words']) && $arrCount > 1 && $arrCount < 4){
 				$permut = $this->permutation($this->keywords['new']['without_noise']);
 				foreach($permut as $word){
 					if($word != $this->keywords['original']['words']) {
@@ -141,7 +143,7 @@
 			}
 
 			//join two words as alternative
-			if($wordCount==2) {
+			if($arrCount==2) {
 				$this->keywords['new']['alternative'][] = implode('',$this->keywords['new']['without_noise']);
 			}
 			
@@ -175,9 +177,14 @@
 
 			for($i=0;$i<$dataCount;$i++){
 				$oldData[$i]['corrected'] = false;
-				
+
+				$oldData[$i]['header'] = strip_tags($oldData[$i]['header']);
+				$oldData[$i]['category'] = strip_tags($oldData[$i]['category']);
+				$oldData[$i]['additional'] = strip_tags($oldData[$i]['additional']);
+				$oldData[$i]['lang'] = strip_tags($oldData[$i]['lang']);
+				$oldData[$i]['pubyear'] = strtok(strip_tags($oldData[$i]['pubyear']),'-');
+				$oldData[$i]['location'] = strip_tags($oldData[$i]['location']);
 				$oldData[$i]['effected'] = array();
-				
 				$oldData[$i]['rankBefore'] = $oldData[$i]['rank'];
 
 				//checking first word from both header and additional are the same
