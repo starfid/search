@@ -78,7 +78,7 @@ svg text {fill:transparent;cursor:pointer;width:60px;height:40px;font-size:14px;
 
 #sideBar {width:300px;margin:0;}
 #sideBar h1 {font-size:24px}
-.segment div {margin:10px 0}
+.segment * {margin:10px 0}
 #category {text-transform:capitalize}
 
 #results {width:590px;}
@@ -100,7 +100,7 @@ dd {font-size:14px;}
 	#search, #benchmark {width:86%;}
 	#toolbar {padding-left:0; width:94%}
 	#benchmark {margin:8px 0 0 0;padding:0 0 0 18px;height:auto;}
-	#sideBar {background-color:#F6F6F5;display:none;width:100%;position:absolute;z-index:2;left:0;border-top-left-radius: 20px;border-top-right-radius: 20px;}
+	#sideBar {display:none;width:100%;position:absolute;z-index:2;left:0;border-top-left-radius: 20px;border-top-right-radius: 20px;}
 	.segment {margin:18px;color:black!important}
 	#catswrap {width:100%}
 	#catswrap {overflow-x:scroll;}
