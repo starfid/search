@@ -6,6 +6,8 @@
 		'autocad' => 'auto cad',
 		'avid' => 'audio video',
 		'bep' => 'break even point',
+		'tv' => 'televisi',
+		'kbbi' => 'kamus besar bahasa indonesia',
 	);
 
 ?>
