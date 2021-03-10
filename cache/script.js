@@ -182,7 +182,7 @@ setSideBar = function(el){
 		});
 		$('#sideBar').css({
 			'display'	:'block',
-			'height'	:'100%',
+			'height'	:'150%',
 			'top'		: (topPop+150)+'px'
 		});
 		$.timer(gap.length,35,
