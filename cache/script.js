@@ -105,6 +105,9 @@ window.onload = function(){
 	$('dl').on('click',function(){
 		this.className != 'warning' && setSideBar(this);
 	});
+	$('.url').on('click',function(){
+		window.open(this.innerText);
+	});
 	$('#year,#lang').on('change',function(){
 		toolbar(this);
 	});
