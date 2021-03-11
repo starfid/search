@@ -12,19 +12,24 @@
 				$this->build_dictionary();
 			}
 
-			if(isset($_GET['search']) && strlen(trim($_GET['search']))>2){
+			if(isset($_GET['search'])){
 				$this->isSearch = true;
-				$_GET['search'] = iconv('UTF-8', 'ASCII//TRANSLIT', $_GET['search']);
+				$_GET['search'] = iconv('UTF-8', 'ASCII//TRANSLIT', trim($_GET['search']));
 				
+				//check if a two letters is abbreviation 
+				if(isset($_SESSION['dictionary']['abbreviation'][$_GET['search']])){
+					$_GET['search'] = $_SESSION['dictionary']['abbreviation'][$_GET['search']];
+				}
+
 				if(strlen(preg_replace('/[^a-z]/i','', $_GET['search']))<3){
 					$this->isSearch = false;
 				}
 				else {
 					//space, alphanum, dash, single and double quote
-					$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" ]/',' ',$_GET['search'])));
+					$this->keywords['original']['placeholder'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" ]/',' ',$_GET['search']));
 
 					//collect only space and alphanum
-					$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search'])));
+					$this->keywords['original']['clean'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search']));
 					//strip start and end single quote
 					$this->keywords['original']['clean'] = preg_replace('~^[\']?(.*?)[\']?$~', '$1', $this->keywords['original']['clean']);
 					$this->wordCount = substr_count($this->keywords['original']['clean'],' ')+1;
@@ -96,7 +101,7 @@
 				if(isset($_SESSION['dictionary']['similarity'][$words])) {
 					$colon = explode(',',$_SESSION['dictionary']['similarity'][$words]);
 					foreach($colon as $word){
-						$this->keywords['new']['alternative'][] = str_replace("xslashx","'",$word);
+						$this->keywords['new']['alternative'][] = str_replace("xslashx","'",trim($word));
 					}
 				}
 
@@ -443,7 +448,7 @@
 				$dictionary['similarity'],
 				$dictionary['abbreviation']
 			);
-			unset($dictionary['abbreviation']);
+			//unset($dictionary['abbreviation']);
 			
 			//store dictionary session to session
 			$_SESSION['dictionary'] = $dictionary;
