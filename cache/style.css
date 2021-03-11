@@ -80,6 +80,7 @@ svg text {fill:transparent;cursor:pointer;width:60px;height:40px;font-size:14px;
 #sideBar h1 {font-size:24px}
 .segment * {margin:10px 0}
 #category {text-transform:capitalize}
+.url:hover {text-decoration:underline;cursor:pointer;}
 
 #results {width:590px;}
 dl {padding:14px 6px;margin:10px 0}
