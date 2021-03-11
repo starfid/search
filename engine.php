@@ -182,13 +182,6 @@
 
 			for($i=0;$i<$dataCount;$i++){
 				$oldData[$i]['corrected'] = false;
-
-				$oldData[$i]['header'] = strip_tags($oldData[$i]['header']);
-				$oldData[$i]['category'] = strip_tags($oldData[$i]['category']);
-				$oldData[$i]['additional'] = strip_tags($oldData[$i]['additional']);
-				$oldData[$i]['lang'] = strip_tags($oldData[$i]['lang']);
-				$oldData[$i]['pubyear'] = strtok(strip_tags($oldData[$i]['pubyear']),'-');
-				$oldData[$i]['location'] = strip_tags($oldData[$i]['location']);
 				$oldData[$i]['effected'] = array();
 				$oldData[$i]['rankBefore'] = $oldData[$i]['rank'];
 
@@ -397,11 +390,24 @@
 				$this->error[] = isset($q['error'])?$q['error']:NULL;
 				for($i=0;$i<$q['count'];$i++){
 					if($q['match'][$i]['header'] == "") continue;
+
+					//strip tags all items
+					$q['match'][$i] = array_map(
+						function($arr){
+							return strip_tags($arr);
+						},
+						$q['match'][$i]
+					);
+
+					//in case data type mistaken as date. Expecting year
+					$q['match'][$i]['pubyear'] = strtok(strip_tags($q['match'][$i]['pubyear']),'-');
+
 					$this->data[] = $q['match'][$i];
+					
 					if(!empty($q['match'][$i]['category'])){
 						$this->catFound[] = $q['match'][$i]['category'];
 					}
-					if(!empty($q['match'][$i]['pubyear']) && preg_match('/^19|20\d{2}/',$q['match'][$i]['pubyear']) ){
+					if(!empty($q['match'][$i]['pubyear']) && preg_match('/^19|20\d{2}/',strtok($q['match'][$i]['pubyear'],'-')) ){
 						$this->years[] = $q['match'][$i]['pubyear'];
 					}
 					if(!empty($q['match'][$i]['lang'])){
