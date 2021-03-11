@@ -132,6 +132,7 @@
 
 			if(!$this->emptyResult){
 				$selected = $this->data[0];
+				$isURL = preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $selected['location'])?" class=\"url\"":"";
 				$s .= "\n\t\t\t<div class=\"right\" id=\"sideBar\">";
 				$s .= "\n\t\t\t\t<div class=\"segment\">";
 				$s .= "\n\t\t\t\t\t<h1 id='header'>".$selected['header']."</h1>";
@@ -139,9 +140,9 @@
 				$s .= "\n\t\t\t\t\t<div><b>Category:</b> <span id='category'>".$selected['category']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Published Year:</b> <span id='pubyear'>".$selected['pubyear']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".$selected['lang']."</span></div>";
-				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'>".$selected['location']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'".$isURL.">".$selected['location']."</span></div>"; //do not use crafted html tag
 				$s .= "\n\t\t\t\t\t<div><b>Address:</b> ".$this->siteAddress."</div>";
-				$s .= "\n\t\t\t\t\t<img src=\"cache/map.jpg\" width=\"100%\" />"; //map.jpg recommended less than 500px height or less than 30kb
+				$s .= "\n\t\t\t\t\t<img id=\"map\" src=\"cache/map.jpg\" width=\"100%\" />"; //map.jpg recommended less than 500px height or less than 30kb
 				$s .= "\n\t\t\t\t</div>";
 				$s .= "\n\t\t\t</div>";
 			}
@@ -192,7 +193,6 @@
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
 			$s .= "<!--";
-			$s .= "<script></script>";
 
 			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
 
