@@ -407,7 +407,7 @@
 					if(!empty($q['match'][$i]['category'])){
 						$this->catFound[] = $q['match'][$i]['category'];
 					}
-					if(!empty($q['match'][$i]['pubyear']) && preg_match('/^19|20\d{2}/',strtok($q['match'][$i]['pubyear'],'-')) ){
+					if(!empty($q['match'][$i]['pubyear']) && preg_match('/^19|20\d{2}/',$q['match'][$i]['pubyear']) ){
 						$this->years[] = $q['match'][$i]['pubyear'];
 					}
 					if(!empty($q['match'][$i]['lang'])){
