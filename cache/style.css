@@ -87,6 +87,7 @@ dl {padding:14px 6px;margin:10px 0}
 dt {color:#00278E;font-size:18px;cursor:pointer}
 dd {font-size:14px;}
 .loc {color:#20692B;margin:6px 0}
+#additional {height:50px;text-overflow: ellipsis;overflow:hidden;}
 
 #main {min-height:500px;margin-bottom:100px;}
 
@@ -112,7 +113,7 @@ dd {font-size:14px;}
 	#toolbar select {padding: 5px 10px}
 	dl, #toolbar select {border:solid 1px rgba(0, 0, 0, 0.15); border-radius:10px; box-shadow:rgba(0, 0, 0, 0.06) 0px 2px 3px 0px;}
 	.loc {margin:3px 0}
-	.info, #additional {height:50px;text-overflow: ellipsis;overflow:hidden;}
+	.info {height:50px;text-overflow: ellipsis;overflow:hidden;}
 	.warning {background-color:transparent;border:none;border-radius:0;box-shadow:none}
 }
 @media (max-width: 420px) {
