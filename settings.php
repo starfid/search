@@ -84,21 +84,40 @@
 			'site'			=> array(
 				'name'			=> 'Search Engine',
 				'desc'			=> 'Indexing multiple tables and sort the result in relevance order start from the top list',
-				'address'		=> 'One Infinite Loop Cupertino, California 95014 (408) 606-5775',
 			),
 			'campaign'		=> array(
 				'title'			=> 'Protect Each Other',
 				'desc'			=> 'Love your family and friends, wear a face mask'
 			),
 			'categories'		=> array(
-				'people'		=> 'Student and employee',
-				'buku' 			=> 'Collections at level 3 and 4',
-				'skripsi' 		=> 'Collections at level 2',
-				'multimedia' 		=> 'Collection at level 2',
-				'laporan' 		=> 'Collection at level 2',
-				'jurnal' 		=> 'Collection at level 2',
-				'ebook' 		=> 'Online journal subscription',
-				'repository' 		=> 'Online collections'				
+				'buku' 			=> array(
+					'address' 		=> '3rd and 4th Floors. State University Library. One Infinite Loop Cupertino. California',
+					'map' 			=> 'book.png'
+				),
+				'skripsi' 		=> array(
+					'address' 		=> '2nd Floor. Thesis Room. State University Library. One Infinite Loop Cupertino. California',
+					'map' 			=> 'thesis.png'
+				),
+				'multimedia' 		=> array(
+					'address' 		=> '3rd Floor. Multimedia Room. State University Library. One Infinite Loop Cupertino. California',
+					'map' 			=> 'multimedia.png'
+				),
+				'laporan' 		=> array(
+					'address' 		=> '3rd Floor. Serial Room. State University Library. One Infinite Loop Cupertino. California',
+					'map' 			=> 'serial.png'
+				),
+				'jurnal' 		=> array(
+					'address' 		=> '3rd Floor. Serial Room. State University Library. One Infinite Loop Cupertino. California',
+					'map' 			=> 'serial.png'
+				),
+				'ebook' 		=> array(
+					'address' 		=> '3rd Floor. Serial Room. State University Library. One Infinite Loop Cupertino. California',
+					'map' 			=> 'serial.png'
+				),
+				'repository' 	=> array(
+					'address' 		=> 'Accessible inside State University Library. One Infinite Loop Cupertino. California',
+					'map' 			=> 'serial.png'
+				),
 			),
 			'developing'		=> true,
 			'minimizeHTML'		=> true,
