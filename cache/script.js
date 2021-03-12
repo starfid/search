@@ -130,6 +130,9 @@ window.onload = function(){
 			lineclick(this);
 		});
 	}
+	if(parseInt(screen.width)<1280){
+		$('title').text('Search');
+	}
 };
 
 var originKeyword, gap = [100,60,30,10], fromCat = !!0, swipeStart, firstSwipe = !!0, swipedUp = !!0;
