@@ -1,7 +1,7 @@
 <?php
 	class Serp extends Tool{
 		public $content, $keywords;
-		private $data, $selectedCat, $years = array(), $langs = array(), $allCats, $siteTitle, $emptyResult, $developing, $placeholder, $error, $isStrict;
+		private $data, $selectedCat, $years = array(), $langs = array(), $allCats, $siteTitle, $emptyResult, $mapAddress, $developing, $placeholder, $error, $isStrict;
 
 		function __construct($result, $preference){
 			$this->keywords = $result->keywords;
@@ -44,7 +44,7 @@
 			
 			$this->siteTitle = !empty($this->placeholder)?htmlentities($this->placeholder)." - ":"";
 			$this->siteTitle = $this->siteTitle.$this->pref['site']['name'];
-			$this->siteAddress = $this->pref['site']['address'];
+			$this->mapAddress = $preference['categories'];
 			
 
 			$format = isset($_GET['format'])?$_GET['format']:NULL;
@@ -66,7 +66,6 @@
 			$s .= "\n\t\t<meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />";
 			$s .= "\n\t\t<meta content=\"telephone=no\" name=\"format-detection\" />";
 			$s .= "\n\t\t<link href=\"cache/style.css".$random."\" rel=\"stylesheet\" type=\"text/css\" />";
-			$s .= "\n\t\t<script src=\"cache/script.js".$random."\" type=\"text/javascript\"></script>";
 			$s .= "\n\t</head>";
 			$s .= "\n\t<body id=\"main-bg\">";
 
@@ -139,10 +138,10 @@
 				$s .= "\n\t\t\t\t\t<div id='additional'>".$selected['additional']."</div>";
 				$s .= "\n\t\t\t\t\t<div><b>Category:</b> <span id='category'>".$selected['category']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Published Year:</b> <span id='pubyear'>".$selected['pubyear']."</span></div>";
-				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".$selected['lang']."</span></div>";
-				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'".$isURL.">".$selected['location']."</span></div>"; //do not use crafted html tag
-				$s .= "\n\t\t\t\t\t<div><b>Address:</b> ".$this->siteAddress."</div>";
-				$s .= "\n\t\t\t\t\t<img id=\"map\" src=\"cache/map.jpg\" width=\"100%\" />"; //map.jpg recommended less than 500px height or less than 30kb
+				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".ucwords(strtolower($selected['lang']))."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'".$isURL.">".$selected['location']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Address:</b> <span id='address'>".strip_tags($this->mapAddress[$selected['category']]['address'])."</span></div>";
+				$s .= "\n\t\t\t\t\t<img id=\"map\" src=\"cache/".strip_tags($this->mapAddress[$selected['category']]['map'])."\" width=\"100%\" />";
 				$s .= "\n\t\t\t\t</div>";
 				$s .= "\n\t\t\t</div>";
 			}
@@ -192,6 +191,19 @@
 
 			$s .= "\n\t\t\t</div>";
 			$s .= "\n\t\t</div>";
+			
+			$s .= "\n\t\t<script>";
+				$s .= "\n\t\t\tconst mapAddress = {";
+				foreach($this->mapAddress as $cats => $cat){
+					$s .= "\n\t\t\t\t'".$cats."' : {";
+					$s .= "\n\t\t\t\t\t'map' : '".strip_tags(addslashes($cat['map']))."',";
+					$s .= "\n\t\t\t\t\t'address' : '".strip_tags(addslashes($cat['address']))."'";
+					$s .= "\n\t\t\t\t},";
+				}
+				$s .= "\n\t\t\t}";
+			$s .= "\n\t\t</script>";
+
+			$s .= "\n\t\t<script src=\"cache/script.js".$random."\" type=\"text/javascript\"></script>";
 			$s .= "<!--";
 
 			$this->content = $this->pref['minimizeHTML']?preg_replace('/[\r\n|\n|\t]+/', '', $s):$s;
