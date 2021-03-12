@@ -166,6 +166,9 @@ setSideBar = function(el){
 	$('#category').text(strip($(el).attr('data-cat')));
 	$('#pubyear').text(strip($(el).attr('data-year')));
 	$('#language').text(strip($(el).attr('data-lang')));
+	$('#address').text(mapAddress[$('#category').text()]['address']);
+	$('#map').attr('src','cache/'+mapAddress[$('#category').text()]['map']);
+	
 	if(screen.width < 767){
 		document.addEventListener('touchmove', preventTouch, { passive: false });
 		$('body').css('overflow','hidden');
