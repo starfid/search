@@ -65,6 +65,12 @@
 			$s .= "\n\t\t<meta content=\"width=device-width,initial-scale=1,minimum-scale=1,user-scalable=no,shrink-to-fit=no\" name=\"viewport\" />";
 			$s .= "\n\t\t<meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />";
 			$s .= "\n\t\t<meta content=\"telephone=no\" name=\"format-detection\" />";
+			$s .= "\n\t\t<meta property=\"og:type\" content=\"article\" />";
+			$s .= "\n\t\t<meta property=\"og:title\" content=\"".$this->siteTitle."\" />";
+			$s .= "\n\t\t<meta property=\"og:description\" content=\"".$this->pref['site']['desc']."\" />";
+			$s .= "\n\t\t<meta property=\"og:image\" content=\"cache/favicon.png".$random."\" itemprop=\"image\" />";
+			$s .= "\n\t\t<link href=\"cache/favicon.ico".$random."\" rel=\"icon\" type=\"image/x-icon\" />";
+			$s .= "\n\t\t<link href=\"cache/favicon.png".$random."\" rel=\"apple-touch-icon\" />";
 			$s .= "\n\t\t<link href=\"cache/style.css".$random."\" rel=\"stylesheet\" type=\"text/css\" />";
 			$s .= "\n\t</head>";
 			$s .= "\n\t<body id=\"main-bg\">";
