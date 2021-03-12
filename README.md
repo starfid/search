@@ -12,6 +12,7 @@
 - Year and language filters.
 - Support quoted words.
 - Timeline chart in desktop mode.
+- Display map location & address for each item
 
 ## API Sample
 ```
