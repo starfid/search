@@ -172,10 +172,16 @@ setSideBar = function(el){
 	$('#address').text(mapAddress[$('#category').text()]['address']);
 	$('#map').attr('src','cache/'+mapAddress[$('#category').text()]['map']);
 	
-	if(screen.width < 767){
+	var scrollY = window.scrollY, topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35));
+	if(screen.width > 767){
+		var top = topScroll;
+		if(top>156) top = top - 100;
+		$('#sideBar').css('margin-top',top+'px');
+	}
+	else {
 		document.addEventListener('touchmove', preventTouch, { passive: false });
 		$('body').css('overflow','hidden');
-		var scrollY = window.scrollY, topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35))
+		
 		$('body').append({
 			'element':'div',
 			'id':'popBase',
