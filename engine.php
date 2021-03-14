@@ -37,7 +37,6 @@
 					preg_match('/^"(.*?)"$/',$this->keywords['original']['placeholder'],$this->quoted);
 					$this->isStrict = count($this->quoted)>0 || $this->wordCount ==1?true:false;
 
-
 					$this->build_keywords();
 				}
 			}
@@ -108,6 +107,7 @@
 				//checking suffix dictionary
 				if(isset($_SESSION['dictionary']['suffix_exception'])){
 					foreach($_SESSION['dictionary']['suffix_exception'] as $suffix => $exception){
+						if(count($exception)<1) continue;
 						if(substr($words,-strlen($suffix)) == $suffix && !in_array($words,$exception)){
 							$this->keywords['new']['alternative'][] = substr($words,0,-strlen($suffix));
 						}
@@ -117,6 +117,7 @@
 				//checking prefix dictionary
 				if(isset($_SESSION['dictionary']['prefix_exception'])){
 					foreach($_SESSION['dictionary']['prefix_exception'] as $prefix => $exception){
+						if(count($exception)<1) continue;
 						if(substr($words,0,strlen($prefix)) == $prefix && !in_array($words,$exception)){
 							$this->keywords['new']['alternative'][] = substr($words,strlen($prefix));
 							$this->keywords['new']['alternative'][] = $prefix." ".substr($words,strlen($prefix));
@@ -201,7 +202,6 @@
 					$oldData[$i]['additional'] = preg_replace('/^[^a-z]+/i', '',implode('.',$newAdditional));
 				}
 
-
 				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
 				$oldData[$i]['indexed'] = $indexed;
 
@@ -283,6 +283,7 @@
 						$full = addslashes($this->keywords['original']['full']);
 						$word1and2 = explode(' ',$full);
 						$where[] = "\n\t".$column." like '%".$full."%'";
+						$rank[]  = "\n\tcast(if(".$column."='".$full."','1000',0) as signed) ";
 
 						if(array_key_exists("fullalternative",$this->keywords['new'])){
 							foreach($this->keywords['new']['fullalternative'] as $alternative){
@@ -418,7 +419,6 @@
 
 			if(!is_null($this->data)){
 				if($this->isSearch){
-					
 
 					$this->correction();
 					
