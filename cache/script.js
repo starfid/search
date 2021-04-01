@@ -171,7 +171,12 @@ setSideBar = function(el){
 	$('#language').text(strip($(el).attr('data-lang')));
 	$('#address').text(mapAddress[$('#category').text()]['address']);
 	$('#map').attr('src','cache/'+mapAddress[$('#category').text()]['map']);
-	
+
+	//add URL	
+	$('#location').class(
+		(/^(http|https):\/\/\w+/i).test($('#location').text())?'add':'remove'
+	,'url');
+
 	var scrollY = window.scrollY, topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35));
 	if(screen.width > 767){
 		var top = topScroll;
