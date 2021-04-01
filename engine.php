@@ -44,6 +44,10 @@
 			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
 			$this->build_sql();
 			$this->preparing_result();
+			
+			//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+			//print_r($this->data);
+
 			$this->error = array_filter($this->error);
 		}
 
@@ -186,27 +190,32 @@
 				$oldData[$i]['effected'] = array();
 				$oldData[$i]['rankBefore'] = $oldData[$i]['rank'];
 
-				//checking first word from both header and additional are the same
-				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
-				$indexed = explode(' ',$indexed);
-
-				if($indexed[0] == strtolower(substr(trim($oldData[$i]['additional']),0,strlen($indexed[0])))){
-					$newAdditional = explode('.',$oldData[$i]['additional']);
-					$oldData[$i]['additionalFirstWord'] = $newAdditional[0];
-					if($oldData[$i]['rank'] > 41){
-						//have single keyword
-						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 40;
-					}
-					array_shift($newAdditional);
-					//$oldData[$i]['index0'] = $indexed;
-					$oldData[$i]['additional'] = preg_replace('/^[^a-z]+/i', '',implode('.',$newAdditional));
-				}
+				//get first word from additional data
+				$oldData[$i]['additionalFirstWord'] = strtolower(trim(strtok(preg_replace('/\.+$/','',preg_replace('/\.+\s/',' ',$oldData[$i]['additional'])),' ')));
+				
+				$oldData[$i]['headerFirstWord'] = preg_replace('/[^a-z0-9]/i','',strtok(strtolower(trim($oldData[$i]['header'])),' '));
 
 				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
 				$oldData[$i]['indexed'] = $indexed;
-
 				$indexed = explode(' ',$indexed);
 				$words = array_count_values($indexed);
+
+				if($oldData[$i]['headerFirstWord'] == $oldData[$i]['additionalFirstWord']){
+
+					
+					if(in_array($oldData[$i]['additionalFirstWord'],$this->keywords['new']['final'])){
+						$newAdditional = explode(' ',$oldData[$i]['additional']);
+						array_shift($newAdditional);
+						$oldData[$i]['additional'] = $oldData[$i]['additional'];
+					}
+
+					if($oldData[$i]['rank'] > 400){
+						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 400;
+					}
+					elseif($oldData[$i]['rank'] > 41){
+						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 40;
+					}
+				}
 				
 				foreach($words as $word => $count){
 					
@@ -231,6 +240,7 @@
 
 				$newData[] = $oldData[$i];
 			}
+			//print_r($newData);
 			$this->data = $newData;
 		}
 
