@@ -65,12 +65,15 @@
 			$s .= "\n\t\t<meta content=\"width=device-width,initial-scale=1,minimum-scale=1,user-scalable=no,shrink-to-fit=no\" name=\"viewport\" />";
 			$s .= "\n\t\t<meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />";
 			$s .= "\n\t\t<meta content=\"telephone=no\" name=\"format-detection\" />";
+
+			$s .= "\n\t\t<link href=\"cache/favicon.ico".$random."\" rel=\"icon\" type=\"image/x-icon\" />";
+			$s .= "\n\t\t<link href=\"cache/favicon.png".$random."\" rel=\"apple-touch-icon\" />";
+
 			$s .= "\n\t\t<meta property=\"og:type\" content=\"article\" />";
 			$s .= "\n\t\t<meta property=\"og:title\" content=\"".$this->siteTitle."\" />";
 			$s .= "\n\t\t<meta property=\"og:description\" content=\"".$this->pref['site']['desc']."\" />";
 			$s .= "\n\t\t<meta property=\"og:image\" content=\"cache/favicon.png".$random."\" itemprop=\"image\" />";
-			$s .= "\n\t\t<link href=\"cache/favicon.ico".$random."\" rel=\"icon\" type=\"image/x-icon\" />";
-			$s .= "\n\t\t<link href=\"cache/favicon.png".$random."\" rel=\"apple-touch-icon\" />";
+
 			$s .= "\n\t\t<link href=\"cache/style.css".$random."\" rel=\"stylesheet\" type=\"text/css\" />";
 			$s .= "\n\t</head>";
 			$s .= "\n\t<body id=\"main-bg\">";
@@ -137,7 +140,6 @@
 
 			if(!$this->emptyResult){
 				$selected = $this->data[0];
-				$isURL = preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $selected['location'])?" class=\"url\"":"";
 				$s .= "\n\t\t\t<div class=\"right\" id=\"sideBar\">";
 				$s .= "\n\t\t\t\t<div class=\"segment\">";
 				$s .= "\n\t\t\t\t\t<h1 id='header'>".$selected['header']."</h1>";
@@ -145,7 +147,7 @@
 				$s .= "\n\t\t\t\t\t<div><b>Category:</b> <span id='category'>".$selected['category']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Published Year:</b> <span id='pubyear'>".$selected['pubyear']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".ucwords(strtolower($selected['lang']))."</span></div>";
-				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'".$isURL.">".$selected['location']."</span></div>";
+				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'>".$selected['location']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Address:</b> <span id='address'>".strip_tags($this->mapAddress[$selected['category']]['address'])."</span></div>";
 				$s .= "\n\t\t\t\t\t<img id=\"map\" src=\"cache/".strip_tags($this->mapAddress[$selected['category']]['map'])."\" width=\"100%\" />";
 				$s .= "\n\t\t\t\t</div>";
