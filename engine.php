@@ -44,10 +44,6 @@
 			$this->selectedCat = $this->isSearch && isset($_GET['cat']) && in_array($_GET['cat'],array_keys($this->settings['preference']['categories']))?$_GET['cat']:'all';
 			$this->build_sql();
 			$this->preparing_result();
-			
-			//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-			//print_r($this->data);
-
 			$this->error = array_filter($this->error);
 		}
 
@@ -215,6 +211,10 @@
 					elseif($oldData[$i]['rank'] > 41){
 						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 40;
 					}
+				}
+
+				if($this->wordCount == 1 && soundex($oldData[$i]['header']) == soundex($this->keywords['original']['full'])){
+					$oldData[$i]['rank'] = $oldData[$i]['rank'] + 400;
 				}
 				
 				foreach($words as $word => $count){
