@@ -1,7 +1,7 @@
 <?php
 	class Search extends Database {
 		public $data, $selectedCat, $catFound, $years, $langs, $keywords, $sql, $nodata, $benchmarkStarted, $error = Array(), $isSearch, $isStrict;
-		private $settings, $quoted, $wordCount;
+		private $settings, $quoted, $wordCount, $hyphen_words;
 
 		function __construct($settings){
 			$this->benchmarkStarted = microtime(true);
@@ -26,10 +26,10 @@
 				}
 				else {
 					//space, alphanum, dash, single and double quote
-					$this->keywords['original']['placeholder'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" ]/',' ',$_GET['search']));
+					$this->keywords['original']['placeholder'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" -]/',' ',$_GET['search']));
 
 					//collect only space and alphanum
-					$this->keywords['original']['clean'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' ]/',' ',$_GET['search']));
+					$this->keywords['original']['clean'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' -]/',' ',$_GET['search']));
 					//strip start and end single quote
 					$this->keywords['original']['clean'] = preg_replace('~^[\']?(.*?)[\']?$~', '$1', $this->keywords['original']['clean']);
 					$this->wordCount = substr_count($this->keywords['original']['clean'],' ')+1;
@@ -93,9 +93,32 @@
 			}
 
 			$this->keywords['new']['alternative'] = array();
+			$this->hyphen_words = array();
 
+			//making altenative words
 			foreach($this->keywords['new']['without_noise'] as $words){
 
+				//checking if have dash
+				if(strpos($words,"-")){
+					//replace to space
+					$this->keywords['new']['alternative'][] = str_replace("-"," ",$words);
+
+					//remove dash
+					$this->keywords['new']['alternative'][] = str_replace("-","",$words);
+
+					//remove 2 chars prefix
+					$this->keywords['new']['alternative'][] = preg_replace('/^[a-z]{1,2}\-(.*?)/','$1',$words);
+
+					//separate two words
+					preg_match("/(\w{3,})\-(\w{4,})/",$words,$two_words);
+					if(!empty($two_words[1]) && !empty($two_words[2])){
+						$this->hyphen_words[] = $words;
+						$this->keywords['new']['alternative'][] = $two_words[1];
+						$this->keywords['new']['alternative'][] = $two_words[2];
+					}
+
+				}
+				
 				//checking similarity dictionary
 				if(isset($_SESSION['dictionary']['similarity'][$words])) {
 					$colon = explode(',',$_SESSION['dictionary']['similarity'][$words]);
@@ -197,7 +220,6 @@
 				$words = array_count_values($indexed);
 
 				if($oldData[$i]['headerFirstWord'] == $oldData[$i]['additionalFirstWord']){
-
 					
 					if(in_array($oldData[$i]['additionalFirstWord'],$this->keywords['new']['final'])){
 						$newAdditional = explode(' ',$oldData[$i]['additional']);
@@ -289,11 +311,16 @@
 					$gap = "$$$";
 
 					foreach($param['index'] as $column){
-						$column = "trim(lcase(replace(".$column.",'-',' ')))";
+						$column = "trim(lcase(".$column."))";
+						
 						$full = addslashes($this->keywords['original']['full']);
-						$word1and2 = explode(' ',$full);
+						$word1and2 = explode(' ',trim($full));
 						$where[] = "\n\t".$column." like '%".$full."%'";
 						$rank[]  = "\n\tcast(if(".$column."='".$full."','1000',0) as signed) ";
+
+						if(count($this->hyphen_words)>0){
+							$rank[]  = "\n\tcast(if(instr(".$column.",'".$full."'),'500',0) as signed) ";
+						}
 
 						if(array_key_exists("fullalternative",$this->keywords['new'])){
 							foreach($this->keywords['new']['fullalternative'] as $alternative){
