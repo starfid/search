@@ -55,14 +55,14 @@ $.init.prototype = {
 		}
 		for(var i in param) el.setAttribute(i,param[i]);
 	},
-    remove: function() {
-    	this[0] !== undefined && this[0].parentNode.removeChild(this[0]);
-    },
+	remove: function() {
+		this[0] !== undefined && this[0].parentNode.removeChild(this[0]);
+	},
 	attr: function(key,val) {
 		var el = this[0];
 		return val ? (el.setAttribute(key, val), '') : el.getAttribute(key);
 	},
-    val: function(dat){
+	val: function(dat){
 		var el = this[0];
 		return arguments.length ? (el.value = dat, '') : el.value;
 	},
@@ -70,10 +70,10 @@ $.init.prototype = {
 		var el = this[0];
 		return arguments.length ? (el.innerHTML = dat, '') : el.innerHTML;
 	},
-    focus: function() {
+	focus: function() {
 		this[0].focus();
 	},
-    class: function(cmd,val) {
+	class: function(cmd,val) {
 		this[0].classList[cmd](val);
 	},
 	toggle: function(key,val1,val2){
@@ -104,9 +104,6 @@ window.onload = function(){
 	});
 	$('dl').on('click',function(){
 		this.className != 'warning' && setSideBar(this);
-	});
-	$('.url').on('click',function(){
-		window.open(this.innerText);
 	});
 	$('#year,#lang').on('change',function(){
 		toolbar(this);
@@ -176,6 +173,11 @@ setSideBar = function(el){
 	$('#location').class(
 		(/^(http|https):\/\/\w+/i).test($('#location').text())?'add':'remove'
 	,'url');
+
+	//set url opener
+	$('.url').on('click',function(){
+		window.open(this.innerText);
+	});
 
 	var scrollY = window.scrollY, topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35));
 	if(screen.width > 767){
