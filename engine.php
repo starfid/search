@@ -26,12 +26,12 @@
 				}
 				else {
 					//space, alphanum, dash, single and double quote
-					$this->keywords['original']['placeholder'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" -]/',' ',$_GET['search']));
+					$this->keywords['original']['placeholder'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\'\" -]/',' ',$_GET['search'])));
 
 					//collect only space and alphanum
-					$this->keywords['original']['clean'] = preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' -]/',' ',$_GET['search']));
+					$this->keywords['original']['clean'] = trim(preg_replace('!\s+!',' ',preg_replace('/[^a-zA-Z0-9\' -]/',' ',$_GET['search'])));
 					//strip start and end single quote
-					$this->keywords['original']['clean'] = preg_replace('~^[\']?(.*?)[\']?$~', '$1', $this->keywords['original']['clean']);
+					$this->keywords['original']['clean'] = trim(preg_replace('~^[\']?(.*?)[\']?$~', '$1', $this->keywords['original']['clean']));
 					$this->wordCount = substr_count($this->keywords['original']['clean'],' ')+1;
 
 					preg_match('/^"(.*?)"$/',$this->keywords['original']['placeholder'],$this->quoted);
@@ -209,30 +209,17 @@
 				$oldData[$i]['effected'] = array();
 				$oldData[$i]['rankBefore'] = $oldData[$i]['rank'];
 
-				//get first word from additional data
-				$oldData[$i]['additionalFirstWord'] = strtolower(trim(strtok(preg_replace('/\.+$/','',preg_replace('/\.+\s/',' ',$oldData[$i]['additional'])),' ')));
-				
-				$oldData[$i]['headerFirstWord'] = preg_replace('/[^a-z0-9]/i','',strtok(strtolower(trim($oldData[$i]['header'])),' '));
-
 				$indexed = preg_replace('/\s+/', ' ',strtolower(preg_replace('/[^a-z0-9\-\' ]/i','',$oldData[$i]['header']." ".$oldData[$i]['additional'])));
 				$oldData[$i]['indexed'] = $indexed;
 				$indexed = explode(' ',$indexed);
 				$words = array_count_values($indexed);
 
-				if($oldData[$i]['headerFirstWord'] == $oldData[$i]['additionalFirstWord']){
-					
-					if(in_array($oldData[$i]['additionalFirstWord'],$this->keywords['new']['final'])){
-						$newAdditional = explode(' ',$oldData[$i]['additional']);
-						array_shift($newAdditional);
-						$oldData[$i]['additional'] = $oldData[$i]['additional'];
-					}
+				//get first word from additional data
+				$oldData[$i]['additionalFirstWord'] = strtolower(trim(strtok(preg_replace('/\.+$/','',preg_replace('/\.+\s/',' ',$oldData[$i]['additional'])),' ')));
+				$oldData[$i]['headerFirstWord'] = preg_replace('/[^a-z0-9]/i','',strtok(strtolower(trim($oldData[$i]['header'])),' '));
 
-					if($oldData[$i]['rank'] > 400){
-						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 400;
-					}
-					elseif($oldData[$i]['rank'] > 41){
-						$oldData[$i]['rank'] = $oldData[$i]['rank'] - 40;
-					}
+				if($oldData[$i]['headerFirstWord'] == $oldData[$i]['additionalFirstWord']){
+					$oldData[$i]['rank'] = $oldData[$i]['rank']/2;
 				}
 
 				if($this->wordCount == 1 && soundex($oldData[$i]['header']) == soundex($this->keywords['original']['full'])){
@@ -260,9 +247,15 @@
 					$oldData[$i]['rank'] = $oldData[$i]['rank'] + 100;
 				}
 
+				//remove library's standard for named first title word as writer ended with three dots.
+				$oldData[$i]['additional'] = preg_replace('/^([a-zA-Z\-_ ]+[\.]{3,4}\s{1})/is',' ',$oldData[$i]['additional']);
+
+				//remove punctuation at the beginning and end of string
+				$oldData[$i]['additional'] = ucfirst(preg_replace('/^([\.\s])+|([\.\s]+$)/','',trim($oldData[$i]['additional'])));
+				$oldData[$i]['header'] = ucfirst(preg_replace('/^([\.\s])+|([\.\s]+$)/','',trim($oldData[$i]['header'])));
+
 				$newData[] = $oldData[$i];
 			}
-			//print_r($newData);
 			$this->data = $newData;
 		}
 
