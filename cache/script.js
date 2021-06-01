@@ -89,7 +89,12 @@ window.onload = function(){
 		if((e.which||window.event.keyCode)==27) $('#search').val(''); $('#search').focus(); window.scrollTo(0,0); closeSideBar();
 	});
 	$('#magnify').on('click',function(){
-		submitting();
+		if (SpeechRecognition !== undefined) {
+			speaking();
+		}
+		else {
+			submitting();
+		}
 	});
 	$('#tools').on('click',function(){
 		if($('#toolbar > select').length<1) return false;
@@ -130,9 +135,13 @@ window.onload = function(){
 	if(parseInt(screen.width)<1280){
 		$('title').text('Search');
 	}
+	if (SpeechRecognition !== undefined) {
+		$('#magnify').attr('src','cache/microphone.png');
+	}
 };
 
-var originKeyword, gap = [100,60,30,10], fromCat = !!0, swipeStart, firstSwipe = !!0, swipedUp = !!0;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+var originKeyword, gap = [100,60,30,10], fromCat = !!0, swipeStart, firstSwipe = !!0, swipedUp = !!0,
 submitting = function(){
 	window.event.preventDefault();
 	!fromCat && $('#cat').val('all');
@@ -314,4 +323,16 @@ lineclick = function(el){
 			first = false;
 		}
 	});
-}
+},
+speaking = () => {
+	let recognition = new SpeechRecognition();
+	recognition.lang = 'id-ID';
+	recognition.onstart = () => {};
+	recognition.onspeechend = () => {recognition.stop();};
+	recognition.onresult = (result) => {
+		$('#search').val(result.results[0][0].transcript);
+		submitting();
+	};
+	recognition.start();
+
+};
