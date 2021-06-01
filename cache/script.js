@@ -182,7 +182,6 @@ setSideBar = function(el){
 	var scrollY = window.scrollY, topScroll = parseInt(window.pageYOffset), topPop = parseInt(topScroll+(parseInt(window.innerHeight)*0.35));
 	if(screen.width > 767){
 		var top = topScroll;
-		if(top>156) top = top - 100;
 		$('#sideBar').css('margin-top',top+'px');
 	}
 	else {
@@ -202,6 +201,7 @@ setSideBar = function(el){
 				'z-index':1
 			}
 		});
+		
 		$('#sideBar').css({
 			'display'	:'block',
 			'height'	:'150%',
