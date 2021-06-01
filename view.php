@@ -92,35 +92,41 @@
 				$s .= "\n\t\t\t</div>";
 			}
 			
-			$s .= "\n\t\t<div>";
-			$s .= "\n\t\t\t<div id=\"top-head\" class=\"float center\">";
+			$s .= "\n\t\t<div id=\"sticky\">"; //start sticky
+
+			$s .= "\n\t\t\t<div>";
+			$s .= "\n\t\t\t\t<div id=\"top-head\" class=\"float center\">";
 			
 			$edge = $this->emptyKeyword?"pseudo":"search";
-			$s .= "\n\t\t\t\t<div id=\"".$edge."Box\">";
-			$s .= "\n\t\t\t\t\t<form method=\"get\" action=\"?\" onsumit=\"return submitting()\">";
-			$s .= "\n\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".htmlentities($this->placeholder)."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
-			$s .= "\n\t\t\t\t\t\t<input type=\"hidden\" id=\"cat\" name=\"cat\" value=\"".$this->selectedCat."\" />";
-			$s .= "\n\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" />";
-			$s .= "\n\t\t\t\t\t</form>";
-			$s .= "\n\t\t\t\t</div>";
+			$s .= "\n\t\t\t\t\t<div id=\"".$edge."Box\">";
+			$s .= "\n\t\t\t\t\t\t<form method=\"get\" action=\"?\" onsumit=\"return submitting()\">";
+			$s .= "\n\t\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".htmlentities($this->placeholder)."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
+			$s .= "\n\t\t\t\t\t\t\t<input type=\"hidden\" id=\"cat\" name=\"cat\" value=\"".$this->selectedCat."\" />";
+			$s .= "\n\t\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" />";
+			$s .= "\n\t\t\t\t\t\t</form>";
+			$s .= "\n\t\t\t\t\t</div>";
 
+			$s .= "\n\t\t\t\t</div>";
 			$s .= "\n\t\t\t</div>";
-			$s .= "\n\t\t</div>";
+
 
 
 			$showCat = $this->emptyKeyword?" style=\"display:none\"":"";
-			$s .= "\n\t\t<div id=\"catswrap\"".$showCat.">";
-			$s .= "\n\t\t\t<ul id=\"cats\" class=\"center\">";
+			$s .= "\n\t\t\t<div id=\"catswrap\"".$showCat.">";
+			$s .= "\n\t\t\t\t<ul id=\"cats\" class=\"center\">";
 			foreach($this->allCats as $category){
 				$borderBottom = $category==$this->selectedCat?" class=\"selCat\"":"";
-				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".$category."</li>";
+				$s .= "\n\t\t\t\t\t<li onclick=\"selectCat(this)\"".$borderBottom." id=\"".strtolower($category)."\">".$category."</li>";
 			}
 			if($this->isStrict and (count($this->years)>1 || count($this->langs)>1)){
-				$s .= "\n\t\t\t\t<li onclick=\"selectCat(this)\" id=\"tools\">Tools</li>";
+				$s .= "\n\t\t\t\t\t<li onclick=\"selectCat(this)\" id=\"tools\">Tools</li>";
 			}
-			$s .= "\n\t\t\t</ul>";
-			$s .= "\n\t\t</div>";
+			$s .= "\n\t\t\t\t</ul>";
+			$s .= "\n\t\t\t</div>";
 			
+
+			$s .= "\n\t\t</div>"; //end sticky
+
 			if(!$this->emptyKeyword){
 				$s .= "\n\t\t<div id=\"benchmark\" class=\"center\">About ".round((microtime(true)-$this->benchmarkStarted),2)." seconds</div>";
 			}
