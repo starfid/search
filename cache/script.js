@@ -87,6 +87,7 @@ window.onload = function(){
 	originKeyword != '' && caret();
 	$('body').on('keydown',function(e) {
 		if((e.which||window.event.keyCode)==27) $('#search').val(''); $('#search').focus(); window.scrollTo(0,0); closeSideBar();
+		if((e.which||window.event.keyCode)==16 && SpeechRecognition !== undefined) speaking(); 
 	});
 	$('#magnify').on('click',function(){
 		if (SpeechRecognition !== undefined) {
