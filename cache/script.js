@@ -87,7 +87,16 @@ window.onload = function(){
 	originKeyword != '' && caret();
 	$('body').on('keydown',function(e) {
 		if((e.which||window.event.keyCode)==27) $('#search').val(''); $('#search').focus(); window.scrollTo(0,0); closeSideBar();
-		if((e.which||window.event.keyCode)==16 && SpeechRecognition !== undefined) speaking(); 
+		if((e.which||window.event.keyCode)==16 && SpeechRecognition !== undefined) {
+			var get = new URLSearchParams(window.location.search);
+			if(doneTTS && get.has('tts')){
+				tts($('#category').text() + '. ' + $('#header').text() + '. ' + $('#location').text());
+				doneTTS = !!0;
+			}
+			else {
+				speaking();
+			}
+		} 
 	});
 	$('#magnify').on('click',function(){
 		if (SpeechRecognition !== undefined) {
@@ -142,10 +151,11 @@ window.onload = function(){
 };
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-var originKeyword, gap = [100,60,30,10], fromCat = !!0, swipeStart, firstSwipe = !!0, swipedUp = !!0,
+var originKeyword, gap = [100,60,30,10], fromCat = !!0, swipeStart, firstSwipe = !!0, swipedUp = !!0, fromMic = !!0, doneTTS = !0;
 submitting = function(){
 	window.event.preventDefault();
 	!fromCat && $('#cat').val('all');
+	!fromMic && $('#tts').remove();
 	!(originKeyword == $('#search').val() && !fromCat) && $('form')[0].submit();
 },
 selectCat = function(el){
@@ -332,8 +342,15 @@ speaking = () => {
 	recognition.onspeechend = () => {recognition.stop();};
 	recognition.onresult = (result) => {
 		$('#search').val(result.results[0][0].transcript);
+		fromMic = !0;
 		submitting();
 	};
 	recognition.start();
 
+},
+tts = (txt) => {
+	var word = new SpeechSynthesisUtterance(txt)
+	word.lang = 'id';
+	word.rate = 1;
+	speechSynthesis.speak(word);
 };
