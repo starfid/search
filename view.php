@@ -92,7 +92,8 @@
 				$s .= "\n\t\t\t</div>";
 			}
 			
-			$s .= "\n\t\t<div id=\"sticky\">"; //start sticky
+			$sticky = $this->emptyKeyword?:"sticky";
+			$s .= "\n\t\t<div id=\"".$sticky."\">"; //start sticky
 
 			$s .= "\n\t\t\t<div>";
 			$s .= "\n\t\t\t\t<div id=\"top-head\" class=\"float center\">";
