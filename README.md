@@ -13,6 +13,7 @@
 - Support quoted words.
 - Timeline chart in desktop mode.
 - Display map location & address for each item
+- Speech recognition (Chrome only)
 
 ## API Sample
 ```
