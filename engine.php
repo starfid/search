@@ -498,7 +498,7 @@
 		function __construct($db) {
 			try {
 				$this->link = new PDO(
-					$db['rdbms'].":host=".$db['host'].";dbname=".$db['dbname'].";port=".$db['port'],
+					$db['rdbms'].":host=".$db['host'].";charset=utf8;dbname=".$db['dbname'].";port=".$db['port'],
 					$db['username'],
 					$db['password']
 				);
