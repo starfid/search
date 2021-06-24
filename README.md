@@ -11,9 +11,11 @@
 - Multiple view format (HTML & RSS).
 - Year and language filters.
 - Support quoted words.
-- Timeline chart in desktop mode.
-- Display map location & address for each item
-- Speech recognition (Chrome only)
+- SVG timeline chart in desktop mode.
+- Display map location & address for each item.
+- Speech recognition. Available on Chrome & Edge.
+- Speech synthesis. Available natively on Chrome. Edge require Speech language pack in Windows Settings.
+- Shift Key as toggle for speak and listen. Available on Chrome & Edge. Browser experimental.
 
 ## API Sample
 ```
