@@ -14,7 +14,7 @@
 
 			if(isset($_GET['search'])){
 				$this->isSearch = true;
-				$_GET['search'] = iconv('UTF-8', 'ASCII//TRANSLIT', trim($_GET['search']));
+				$_GET['search'] = iconv('UTF-8', 'ASCII//IGNORE', trim($_GET['search']));
 				
 				//check if a two letters is abbreviation 
 				if(isset($_SESSION['dictionary']['abbreviation'][$_GET['search']])){
