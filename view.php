@@ -104,7 +104,7 @@
 			$s .= "\n\t\t\t\t\t\t\t<input placeholder=\"Search here\" name=\"search\" id=\"search\" inputmode=\"search\" type=\"search\" value=\"".htmlentities($this->placeholder)."\" ondblclick=\"this.value=''\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" autocapitalize=\"off\" />";
 			$s .= "\n\t\t\t\t\t\t\t<input type=\"hidden\" id=\"cat\" name=\"cat\" value=\"".$this->selectedCat."\" />";
 			$s .= "\n\t\t\t\t\t\t\t<input type=\"hidden\" id=\"tts\" name=\"tts\" value=\"1\" />";
-			$s .= "\n\t\t\t\t\t\t\t<img id=\"magnify\" src=\"cache/magnify.png\" />";
+			$s .= "\n\t\t\t\t\t\t\t<img alt=\"Search button\" width=\"20\" height=\"20\" id=\"magnify\" src=\"cache/magnify.png\" />";
 			$s .= "\n\t\t\t\t\t\t</form>";
 			$s .= "\n\t\t\t\t\t</div>";
 
@@ -157,7 +157,7 @@
 				$s .= "\n\t\t\t\t\t<div><b>Language:</b> <span id='language'>".ucwords(strtolower($selected['lang']))."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Location:</b> <span id='location'>".$selected['location']."</span></div>";
 				$s .= "\n\t\t\t\t\t<div><b>Address:</b> <span id='address'>".strip_tags($this->mapAddress[$selected['category']]['address'])."</span></div>";
-				$s .= "\n\t\t\t\t\t<img id=\"map\" src=\"cache/".strip_tags($this->mapAddress[$selected['category']]['map'])."\" width=\"100%\" />";
+				$s .= "\n\t\t\t\t\t<img alt=\"map\" id=\"map\" src=\"cache/".strip_tags($this->mapAddress[$selected['category']]['map'])."\" width=\"100%\" />";
 				$s .= "\n\t\t\t\t</div>";
 				$s .= "\n\t\t\t</div>";
 			}
